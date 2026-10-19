@@ -140,6 +140,29 @@ pub fn configure(options: &mut NativeOptions, backend_override: Option<Backends>
         }
     };
     configure_backends(options, backends);
+    clamp_device_limits(options);
+}
+
+/// Clamps the requested device limits to what the selected adapter actually
+/// supports. Some drivers (e.g. Phytium ftg340 Vulkan) report lower limits
+/// than wgpu's defaults (max_compute_workgroup_size 128 vs 256); without this
+/// the device request fails even though the adapter is perfectly usable.
+pub fn clamp_device_limits(options: &mut NativeOptions) {
+    use std::sync::Arc;
+    if let eframe::egui_wgpu::WgpuSetup::CreateNew(create) = &mut options.wgpu_options.wgpu_setup {
+        let base = Arc::clone(&create.device_descriptor);
+        create.device_descriptor = Arc::new(move |adapter| {
+            let mut descriptor = base(adapter);
+            let before = descriptor.required_limits.max_compute_workgroup_size_y;
+            descriptor.required_limits = descriptor.required_limits.min(adapter.limits());
+            log::warn!(
+                "graphics: clamp adapter={:?} workgroup_y {before} -> {}",
+                adapter.get_info().name,
+                descriptor.required_limits.max_compute_workgroup_size_y
+            );
+            descriptor
+        });
+    }
 }
 
 /// Lists the DirectX 12 adapters, checking each against the limits eframe's device descriptor

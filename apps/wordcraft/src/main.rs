@@ -392,6 +392,27 @@ fn main() -> eframe::Result {
     // Intel Macs: Metal's compiler aborts on wgpu's indirect-validation shaders (#2652).
     #[cfg(target_os = "macos")]
     graphics::configure_indirect_validation(&mut options, graphics::skips_indirect_validation(true, cfg!(target_arch = "x86_64")));
+    // Clamp requested device limits to the adapter's real limits on every platform:
+    // some Vulkan drivers (e.g. Phytium ftg340) allow less than wgpu's defaults, and
+    // an unclamped request fails the whole window creation before the first frame.
+    // (Inlined: the `graphics` module is Windows/macOS-only.)
+    {
+        use std::sync::Arc;
+        if let eframe::egui_wgpu::WgpuSetup::CreateNew(create) = &mut options.wgpu_options.wgpu_setup {
+            let base = Arc::clone(&create.device_descriptor);
+            create.device_descriptor = Arc::new(move |adapter| {
+                let mut descriptor = base(adapter);
+                let adapter_limits = adapter.limits();
+                if !descriptor.required_limits.check_limits(&adapter_limits) {
+                    // Request exceeds what the hardware allows (e.g. ftg340 caps
+                    // max_compute_workgroup_size at 128); the device's own limits are
+                    // the only satisfiable answer, so adopt them wholesale.
+                    descriptor.required_limits = adapter_limits;
+                }
+                descriptor
+            });
+        }
+    }
     load_user_fonts();
     let restored = saved_window();
     if let Some(window) = restored {
