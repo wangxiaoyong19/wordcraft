@@ -24,6 +24,10 @@ egui = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
 
+[dev-dependencies]
+# galcore_desc_stress example: async adapter/device requests and log output.
+pollster = "0.4"
+
 [build-dependencies]
 # Icon + VERSIONINFO for wordcraft.exe; build.rs only uses it when the target is Windows.
 winresource = "0.1"
