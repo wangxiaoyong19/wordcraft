@@ -56,10 +56,10 @@ struct Pool {
     raw: vk::DescriptorPool,
     capacity: u32,
     available: u32,
-    /// Set when a non-conformant driver returned pool-exhaustion errors for
-    /// a pool that still reports free capacity (observed on Vivante galcore).
-    /// Poisoned pools are never allocated from again.
-    poisoned: bool,
+    /// Set when the driver refused to allocate from this pool despite it
+    /// having free capacity, making `alloc` skip it until the pool is empty
+    /// again and can be reset.
+    fragmented: bool,
 }
 
 /// Keeps track of all pools created with this bucket's [`BucketKey`].
@@ -146,12 +146,9 @@ impl DescriptorAllocator {
             // Remove the bucket and destroy any remaining pools.
             let bucket = self.buckets.remove(&key).unwrap();
             for pool in bucket.pools {
-                // Poisoned pools may have degraded accounting (some sets were
-                // counted as allocated but never successfully handed out), so
-                // only require that no more sets are free than the capacity.
-                assert!(
-                    pool.available <= pool.capacity,
-                    "pool accounting is corrupted"
+                assert_eq!(
+                    pool.available, pool.capacity,
+                    "pool is not empty, at least one DescriptorSet has not been freed"
                 );
                 unsafe { device.destroy_descriptor_pool(pool.raw, None) };
             }
@@ -175,78 +172,113 @@ impl DescriptorAllocator {
         }
 
         let key = layout.bucket_key();
+        let bucket = self.buckets.get_mut(&key).unwrap();
+        let capacity_hint = bucket.allocated_sets;
 
-        // Bounded retry: some non-conformant drivers (observed on Vivante
-        // galcore / VeriSilicon GC8000) return ERROR_OUT_OF_POOL_MEMORY or
-        // ERROR_FRAGMENTED_POOL even though the pool reports free capacity,
-        // which the Vulkan spec forbids under the same-layout allocation
-        // guarantee. Instead of hitting `unreachable!()`, poison the
-        // offending pool and retry with another (existing or freshly
-        // created). Give up with OutOfMemory after a few fresh pools so a
-        // deterministically broken driver cannot spin forever.
-        let mut fresh_pools_created = 0u32;
-        loop {
-            let bucket = self.buckets.get_mut(&key).unwrap();
+        // Prefer smaller/older/fuller pools for new allocations to prevent
+        // fragmentation and possibly fragmentation of hardware resources
+        // (VK_ERROR_FRAGMENTATION)
+        let mut candidate = bucket
+            .pools
+            .iter()
+            .position(|pool| !pool.fragmented && pool.available != 0);
 
-            let found = bucket
-                .pools
-                .iter_mut()
-                .enumerate()
-                .find(|(_, pool)| !pool.poisoned && pool.available != 0);
+        let (raw, pool_index) = loop {
+            let index = match candidate {
+                Some(index) => index,
+                None => bucket.create_pool(device, &key, capacity_hint)?.0,
+            };
+            let created_pool = candidate.is_none();
 
-            let (pool_index, pool) = match found {
-                Some(found) => found,
-                None => {
-                    if fresh_pools_created >= 4 {
+            let vk_info = vk::DescriptorSetAllocateInfo::default()
+                .descriptor_pool(bucket.pools[index].raw)
+                .set_layouts(core::slice::from_ref(&layout.raw));
+
+            // From https://docs.vulkan.org/refpages/latest/refpages/source/VkDescriptorPoolCreateInfo.html#_description
+            // > if all sets allocated from the pool since it was created or
+            // > most recently reset use the same number of descriptors
+            // > (of each type) and the requested allocation also uses that
+            // > same number of descriptors (of each type), then
+            // > fragmentation must not cause an allocation failure
+            //
+            // These pools satisfy that condition, but some drivers (e.g.
+            // Mali) fail such allocations anyway once a pool has served
+            // a number of allocations; freeing sets does not make the
+            // pool usable again, only resetting it does.
+            //
+            // Recover instead of failing: reset a pool that has no live sets,
+            // otherwise mark the pool `fragmented` so that allocations skip
+            // it. A fragmented pool is reset once its last set is freed.
+            //
+            // See https://github.com/gfx-rs/wgpu/pull/10264
+            match unsafe { device.allocate_descriptor_sets(&vk_info) } {
+                Ok(sets) => break (sets[0], index),
+                Err(vk::Result::ERROR_FRAGMENTED_POOL | vk::Result::ERROR_OUT_OF_POOL_MEMORY) => {
+                    if created_pool {
+                        // A fresh pool failing to allocate even a single set leaves
+                        // no pool left to fall back to, so drop it and give up.
+                        let pool = bucket.pools.pop().unwrap();
+                        bucket.available_sets -= pool.capacity;
+                        unsafe { device.destroy_descriptor_pool(pool.raw, None) };
                         log::error!(
-                            "descriptor pool allocation keeps failing on this driver; giving up"
+                            "descriptor set allocation from a fresh pool failed unexpectedly"
                         );
                         return Err(crate::DeviceError::OutOfMemory);
                     }
-                    fresh_pools_created += 1;
-                    bucket.create_pool(device, &key, bucket.allocated_sets)?
-                }
-            };
 
-            // Prefer smaller/older/fuller pools for new allocations to prevent
-            // fragmentation and possibly fragmentation of hardware resources
-            // (VK_ERROR_FRAGMENTATION)
-
-            let vk_info = vk::DescriptorSetAllocateInfo::default()
-                .descriptor_pool(pool.raw)
-                .set_layouts(core::slice::from_ref(&layout.raw));
-
-            match unsafe { device.allocate_descriptor_sets(&vk_info) } {
-                Ok(sets) => {
-                    let raw = sets[0];
-                    // We make sure not to exceed the size of the pool.
-                    pool.available -= 1;
-                    bucket.available_sets -= 1;
-                    bucket.allocated_sets += 1;
-                    if update_after_bind {
-                        self.update_after_bind_descriptors_in_all_pools += total_descriptors;
+                    // Resetting a pool restores the spec guarantee that
+                    // fragmentation cannot cause an allocation failure, but it
+                    // implicitly frees all of the pool's sets, so only reset a
+                    // pool that has no live sets.
+                    let pool = &bucket.pools[index];
+                    if pool.available == pool.capacity {
+                        let reset_result = unsafe {
+                            device.reset_descriptor_pool(
+                                pool.raw,
+                                vk::DescriptorPoolResetFlags::empty(),
+                            )
+                        };
+                        if reset_result.is_ok() {
+                            match unsafe { device.allocate_descriptor_sets(&vk_info) } {
+                                Ok(sets) => break (sets[0], index),
+                                Err(
+                                    vk::Result::ERROR_FRAGMENTED_POOL
+                                    | vk::Result::ERROR_OUT_OF_POOL_MEMORY,
+                                ) => {}
+                                Err(err) => return Err(super::map_host_device_oom_err(err)),
+                            }
+                        }
                     }
 
-                    return Ok(DescriptorSet {
-                        raw,
-                        bucket_key: key,
-                        pool_index,
-                    });
-                }
-                Err(vk::Result::ERROR_OUT_OF_POOL_MEMORY)
-                | Err(vk::Result::ERROR_FRAGMENTED_POOL) => {
-                    log::warn!(
-                        "driver returned pool exhaustion for a pool with {} free sets; \
-                         poisoning pool and retrying",
-                        pool.available
+                    let available = bucket.pools[index].available;
+                    let capacity = bucket.pools[index].capacity;
+                    bucket.pools[index].fragmented = true;
+                    bucket.available_sets -= available;
+                    log::debug!(
+                        "Retiring fragmented descriptor pool ({available}/{capacity} sets free), retrying on another pool"
                     );
-                    pool.available = 0;
-                    pool.poisoned = true;
-                    continue;
+                    candidate = bucket
+                        .pools
+                        .iter()
+                        .position(|pool| !pool.fragmented && pool.available != 0);
                 }
                 Err(err) => return Err(super::map_host_device_oom_err(err)),
             }
+        };
+
+        let pool = &mut bucket.pools[pool_index];
+        pool.available -= 1;
+        bucket.available_sets -= 1;
+        bucket.allocated_sets += 1;
+        if update_after_bind {
+            self.update_after_bind_descriptors_in_all_pools += total_descriptors;
         }
+
+        Ok(DescriptorSet {
+            raw,
+            bucket_key: key,
+            pool_index,
+        })
     }
 
     pub unsafe fn free(&mut self, device: &ash::Device, set: DescriptorSet) {
@@ -266,7 +298,22 @@ impl DescriptorAllocator {
         }
 
         pool.available += 1;
-        bucket.available_sets += 1;
+
+        if !pool.fragmented {
+            bucket.available_sets += 1;
+        } else if pool.available == pool.capacity {
+            // A fragmented pool's free sets are unusable until it is reset, so
+            // they do not count towards `available_sets`.
+            // On Mali, freeing sets does not make such a pool usable again;
+            // resetting it is what does, and that is only safe once no sets are live.
+            let reset_result = unsafe {
+                device.reset_descriptor_pool(pool.raw, vk::DescriptorPoolResetFlags::empty())
+            };
+            if reset_result.is_ok() {
+                pool.fragmented = false;
+                bucket.available_sets += pool.capacity;
+            }
+        }
         bucket.allocated_sets -= 1;
         if set.bucket_key.update_after_bind {
             self.update_after_bind_descriptors_in_all_pools -= set.bucket_key.counts.total();
@@ -277,13 +324,18 @@ impl DescriptorAllocator {
         // Destroy a pool only if it's empty and we have 1/4th its capacity
         // in other pools.
         // Note that this logic will never destroy the last pool.
-        let pool = bucket.pools.last().unwrap();
-        if pool.available == pool.capacity
-            && bucket.available_sets - pool.capacity > pool.capacity / 4
+        let last = bucket.pools.last().unwrap();
+        let last_available = last.available;
+        let last_capacity = last.capacity;
+        // Only a non-fragmented pool contributes its capacity to
+        // `available_sets`.
+        let last_contribution = if last.fragmented { 0 } else { last_capacity };
+        if last_available == last_capacity
+            && bucket.available_sets - last_contribution > last_capacity / 4
         {
             let pool = bucket.pools.pop().unwrap();
             unsafe { device.destroy_descriptor_pool(pool.raw, None) };
-            bucket.available_sets -= pool.capacity;
+            bucket.available_sets -= last_contribution;
         }
     }
 }
@@ -344,6 +396,17 @@ fn create_descriptor_pool(
         })
         .collect::<ArrayVec<_, NR_OF_DESCRIPTOR_TYPES>>();
 
+    // Prior to Vulkan 1.3.215 `poolSizeCount` was required to be non-zero, so
+    // add a single small sampler entry if `pool_sizes` would otherwise be
+    // empty.
+    let mut pool_sizes = pool_sizes;
+    if pool_sizes.is_empty() {
+        pool_sizes.push(vk::DescriptorPoolSize {
+            ty: Dt::SAMPLER,
+            descriptor_count: 1,
+        });
+    }
+
     let mut flags = vk::DescriptorPoolCreateFlags::FREE_DESCRIPTOR_SET;
     if key.update_after_bind {
         flags |= vk::DescriptorPoolCreateFlags::UPDATE_AFTER_BIND;
@@ -361,6 +424,6 @@ fn create_descriptor_pool(
         raw,
         capacity,
         available: capacity,
-        poisoned: false,
+        fragmented: false,
     })
 }
