@@ -271,6 +271,110 @@ fn main() {
         println!("phase 3 done ({:?})", started.elapsed());
     }
 
+    // ---- Phase 4: heavy alloc/free cycling on ONE pool. The real crash
+    // surfaced after ~23s of interactive use, long after the first pools were
+    // full and partially freed — internal fragmentation inside the driver's
+    // pool allocator is the plausible trigger. Cycle a single layout through
+    // the same 64-set pool tens of thousands of times.
+    {
+        let churn_buf = device.create_buffer(&wgpu::BufferDescriptor {
+            label: None,
+            size: 64,
+            usage: wgpu::BufferUsages::UNIFORM,
+            mapped_at_creation: false,
+        });
+        const CYCLES: usize = 50_000;
+        for i in 0..CYCLES {
+            let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+                layout: &layout,
+                entries: &[
+                    wgpu::BindGroupEntry {
+                        binding: 0,
+                        resource: churn_buf.as_entire_binding(),
+                    },
+                    wgpu::BindGroupEntry {
+                        binding: 1,
+                        resource: wgpu::BindingResource::TextureView(&view),
+                    },
+                    wgpu::BindGroupEntry {
+                        binding: 2,
+                        resource: wgpu::BindingResource::Sampler(&sampler),
+                    },
+                ],
+                label: None,
+            });
+            drop(group);
+            if (i + 1) % 10_000 == 0 {
+                println!("phase 4: {}/{} cycles ({:?})", i + 1, CYCLES, started.elapsed());
+            }
+        }
+        drop(churn_buf);
+        println!("phase 4 done ({:?})", started.elapsed());
+    }
+
+    // ---- Phase 5: concurrent alloc/free from multiple threads. The app
+    // rasterizes document pages on background threads while egui renders on
+    // the main thread — concurrent vkAllocateDescriptorSets against the same
+    // pools is exactly what production use looks like, and a plausible driver
+    // weak spot (the original crash hit ~23s in, when background work starts).
+    {
+        const THREADS: usize = 8;
+        const PER_THREAD: usize = 8_000;
+        let layout_c = layout.clone();
+        let view_c = view.clone();
+        let sampler_c = sampler.clone();
+        let device_c = device.clone();
+        let shared_buf = device.create_buffer(&wgpu::BufferDescriptor {
+            label: None,
+            size: 64,
+            usage: wgpu::BufferUsages::UNIFORM,
+            mapped_at_creation: false,
+        });
+        let handles: Vec<_> = (0..THREADS)
+            .map(|t| {
+                let layout = layout_c.clone();
+                let view = view_c.clone();
+                let sampler = sampler_c.clone();
+                let device = device_c.clone();
+                let buf = shared_buf.clone();
+                std::thread::spawn(move || {
+                    for _ in 0..PER_THREAD {
+                        let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+                            layout: &layout,
+                            entries: &[
+                                wgpu::BindGroupEntry {
+                                    binding: 0,
+                                    resource: buf.as_entire_binding(),
+                                },
+                                wgpu::BindGroupEntry {
+                                    binding: 1,
+                                    resource: wgpu::BindingResource::TextureView(&view),
+                                },
+                                wgpu::BindGroupEntry {
+                                    binding: 2,
+                                    resource: wgpu::BindingResource::Sampler(&sampler),
+                                },
+                            ],
+                            label: None,
+                        });
+                        drop(group);
+                    }
+                    t
+                })
+            })
+            .collect();
+        for h in handles {
+            h.join().expect("stress thread panicked");
+        }
+        drop(shared_buf);
+        println!(
+            "phase 5 done: {} threads x {} concurrent cycles ({:?})",
+            THREADS,
+            PER_THREAD,
+            started.elapsed()
+        );
+    }
+
     // ---- Tear down everything; device drop runs the pool teardown asserts.
     drop(groups);
     drop(layout);
