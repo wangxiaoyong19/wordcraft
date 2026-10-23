@@ -22,6 +22,11 @@ const SCROLLBAR: f32 = 14.0;
 const RULER: f32 = 22.0;
 /// Maximum device-pixel height of a tile on very tall Web/Draft pages.
 const TILE_HEIGHT_PX: usize = 1024;
+/// A page whose whole raster would need more than this many pixels is split into tiles even when
+/// it fits in one texture. Zoomed in, the whole-page raster costs time in proportion to the
+/// square of the scale, while only the band on screen is ever drawn: a Letter page passes this
+/// budget at about 155% here, and at 500% the whole page is 21.6 Mpx against 0.8 Mpx per tile.
+const TILE_BUDGET_PX: f64 = 2_000_000.0;
 
 /// Drag-select auto-scroll (#688): the pointer within this many points of the viewport's edge
 /// starts scrolling, like Word.
@@ -1198,6 +1203,9 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
         let ppp = ui.ctx().pixels_per_point();
         let max_tex = ui.ctx().input(|i| i.max_texture_side).min(wordcraft_render::MAX_SIDE as usize).max(1) as f32;
         let mut visible_tile_keys = HashSet::new();
+        // Tiles kept beyond the visible band: scrolling back over ground just covered must not
+        // raster it again, and a tile is cheap to hold (0.8 Mpx, 3 MB) compared with a rebuild.
+        let mut keep_tile_keys = HashSet::new();
         let mut rendered = 0;
         let t0 = crate::now_ms();
         let mut rects = Vec::with_capacity(geo.rects.len());
@@ -1213,7 +1221,10 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
             // A Web/Draft page can be arbitrarily tall. Shrinking the whole page into one GPU
             // texture makes the text blurry; split those pages into native-resolution tiles.
             let width_scale = (geo.scale * ppp).min(max_tex / page.w.max(1.0)).max(0.05);
-            let tiled = page.h.clamp(1.0, 1e6) * width_scale > max_tex;
+            // Total raster pixels the whole page would need at this zoom. Past the budget it is
+            // cheaper to raster the visible tiles, and the rest of the page is never drawn.
+            let whole_px = page.w.clamp(1.0, 1e6) as f64 * page.h.clamp(1.0, 1e6) as f64 * (width_scale as f64).powi(2);
+            let tiled = page.h.clamp(1.0, 1e6) * width_scale > max_tex || whole_px > TILE_BUDGET_PX;
             let scale_px = if tiled { width_scale } else { width_scale.min(max_tex / page.h.clamp(1.0, 1e6)).max(0.05) };
             let tile_height_px = TILE_HEIGHT_PX.min(max_tex as usize).max(1);
             // Hide White Space shows only a band of the page; everything below paints into it.
@@ -1276,6 +1287,12 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                 let total_px = (page.h.clamp(1.0, 1e6) * scale_px).ceil() as usize;
                 let screen_per_raster_px = geo.scale / scale_px;
                 let base = pos2((sr.min.x * ppp).round() / ppp, (sr.min.y * ppp).round() / ppp);
+                // One viewport of slack each way: a wheel step rastered the band it brought in,
+                // and a step back over it should hit the cache rather than pay for it twice.
+                let slack = ui.clip_rect().expand2(vec2(0.0, ui.clip_rect().height())).intersect(band);
+                for tile in visible_tiles(sr, slack, geo.scale, scale_px, tile_height_px) {
+                    keep_tile_keys.insert((i, tile));
+                }
                 for tile in visible_tiles(sr, ui.clip_rect().expand(200.0).intersect(band), geo.scale, scale_px, tile_height_px) {
                     let start_px = tile.saturating_mul(tile_height_px);
                     let height_px = total_px.saturating_sub(start_px).min(tile_height_px);
@@ -1398,7 +1415,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
         let clip = ui.clip_rect();
         let near = clip.expand2(vec2(clip.width(), clip.height() * TEXTURE_KEEP_SCREENS));
         app.canvas.textures.retain(|k, _| *k < n && geo.rects.get(*k).is_some_and(|r| r.translate(content_origin.to_vec2()).intersects(near)));
-        app.canvas.tiles.retain(|id, _| visible_tile_keys.contains(id));
+        app.canvas.tiles.retain(|id, _| visible_tile_keys.contains(id) || keep_tile_keys.contains(id));
         app.canvas.page_rects = rects.clone();
         let view_rect = ui.clip_rect();
         if floating_comments(app) {
