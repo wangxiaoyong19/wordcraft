@@ -571,6 +571,12 @@ pub struct WordApp {
     /// Whether egui's own animations were last switched on or off ([`theme::apply_animations`]).
     applied_animations: Option<bool>,
     pub frame_ms: f64,
+    /// Frames drawn in the last whole second, and the window that measured them. `frame_ms` is
+    /// how long the app's own work took; this is how many frames reached the screen, which is
+    /// what someone sees while scrolling.
+    pub fps: f64,
+    frames: u32,
+    fps_since: f64,
     /// The window title last sent; a viewport command schedules a repaint, so only send changes.
     sent_title: String,
     /// Full screen as last asked of the window, and as the window last reported it (#980).
@@ -690,6 +696,9 @@ impl WordApp {
             system_animations: None,
             applied_animations: None,
             frame_ms: 0.0,
+            fps: 0.0,
+            frames: 0,
+            fps_since: 0.0,
             sent_title: String::new(),
             sent_full_screen: false,
             seen_full_screen: None,
@@ -2264,6 +2273,19 @@ impl WordApp {
         }
         self.sync_full_screen(&ctx);
         self.frame_ms = now_ms() - t0;
+        // Frames per second over the last whole second. A wheel step's wall-clock time includes
+        // the scroll animation it starts, so it says nothing about frame rate on its own.
+        let now = now_ms();
+        if self.fps_since <= 0.0 {
+            self.fps_since = now;
+        }
+        self.frames += 1;
+        let span = now - self.fps_since;
+        if span >= 1000.0 {
+            self.fps = self.frames as f64 * 1000.0 / span;
+            self.frames = 0;
+            self.fps_since = now;
+        }
         // Typing and formatting land here, after `logic` has reported.
         self.report_dirty();
     }
