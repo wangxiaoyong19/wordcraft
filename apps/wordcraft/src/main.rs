@@ -414,6 +414,10 @@ fn main() -> eframe::Result {
         }
     }
     load_user_fonts();
+    // The installed fonts (~400 files on a Kylin desktop, 352 ms measured on a Phytium D3000M) are
+    // otherwise cataloged on the UI thread by the first frame's font list (ribbon.rs). Scan them on
+    // a background thread while the window opens instead.
+    wordcraft_fonts::FontDb::global().scan_in_background();
     let restored = saved_window();
     if let Some(window) = restored {
         options.viewport = window.apply(options.viewport);

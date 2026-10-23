@@ -633,7 +633,8 @@ fn flatten(d: &str) -> Result<Vec<(Vec<[f32; 2]>, bool)>, String> {
 /// Rasterise `icon` into a transparent `px`×`px` image in `ink` (premultiplied RGBA).
 pub fn render(icon: &Icon, px: u32, ink: Rgb) -> Rendered {
     let side = px.clamp(8, 4096) as u16;
-    let mut ctx = RenderContext::new_with(side, side, vello_cpu::RenderSettings { num_threads: crate::default_threads(), ..Default::default() });
+    // A 24×24 icon: 0.044–0.069 ms single-threaded, 1.24–2.20 ms with default_threads()' 7.
+    let mut ctx = RenderContext::new_with(side, side, vello_cpu::RenderSettings { num_threads: crate::threads_for(side, side), ..Default::default() });
     ctx.set_transform(Affine::scale(side as f64 / GRID as f64));
     ctx.set_paint(crate::color(ink, 1.0));
     ctx.set_stroke(kurbo::Stroke::new(STROKE as f64).with_caps(kurbo::Cap::Round).with_join(kurbo::Join::Round));

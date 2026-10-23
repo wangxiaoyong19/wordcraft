@@ -1,6 +1,7 @@
 //! WordCraft rasteriser: draws a page's display list with vello_cpu.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
@@ -33,6 +34,68 @@ pub fn default_threads() -> u16 {
 
 /// Largest raster side vello_cpu handles comfortably.
 pub const MAX_SIDE: u32 = 16_000;
+
+/// Worker threads for a `w`×`h` raster (0 on the web, where there are no threads).
+///
+/// vello_cpu builds a fresh rayon pool and one strip buffer per worker inside
+/// `RenderContext::new_with`, so on a small raster the pool costs far more than the drawing.
+/// Measured on a Phytium FTC862 (8 cores, Kylin V11): a 24×24 icon takes 0.044–0.069 ms
+/// single-threaded and 1.24–2.20 ms with the 7 threads [`default_threads`] returns, so icons and
+/// other small rasters stay single-threaded. On a whole page 2, 3 and 7 threads land within noise
+/// of each other (4–6 ms for a 1224×1584 text page); 3 leaves cores free for the UI thread and the
+/// desktop, and [`with_raster`] removes the pool cost either way.
+pub fn threads_for(w: u16, h: u16) -> u16 {
+    #[cfg(target_arch = "wasm32")]
+    {
+        let _ = (w, h);
+        0
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        match u32::from(w) * u32::from(h) {
+            0..=65_536 => 0,
+            65_537..=1_048_576 => 2,
+            _ => 3,
+        }
+    }
+}
+
+/// A raster context kept from one render to the next.
+struct CachedRaster {
+    w: u16,
+    h: u16,
+    threads: u16,
+    ctx: RenderContext,
+    res: Resources,
+}
+
+thread_local! {
+    /// One context per thread, reused while the raster size and thread count stay the same
+    /// (`reset()` clears the recorded drawing but keeps the thread pool and its buffers).
+    static RASTER: RefCell<Option<CachedRaster>> = const { RefCell::new(None) };
+}
+
+/// Runs `f` on a render context the size of the raster, reusing the thread's previous one when it
+/// fits, so a page re-rendered on every edit or zoom step pays for the pool only once.
+fn with_raster<R>(w: u16, h: u16, threads: u16, f: impl FnOnce(&mut RenderContext, &mut Resources) -> R) -> R {
+    RASTER.with(|cell| {
+        let mut slot = cell.borrow_mut();
+        let mut cached = match slot.take() {
+            Some(c) if c.w == w && c.h == h && c.threads == threads => c,
+            _ => CachedRaster {
+                w,
+                h,
+                threads,
+                ctx: RenderContext::new_with(w, h, vello_cpu::RenderSettings { num_threads: threads, ..Default::default() }),
+                res: Resources::new(),
+            },
+        };
+        cached.ctx.reset();
+        let out = f(&mut cached.ctx, &mut cached.res);
+        *slot = Some(cached);
+        out
+    })
+}
 
 /// A rendered image (premultiplied RGBA8, row-major).
 #[derive(Clone, Default)]
@@ -519,25 +582,25 @@ fn render_region_capped(doc: &Document, page: &Page, w: u32, h: u32, view: Affin
     // Over the cap the whole picture is drawn smaller, not cropped.
     let view = if (cw, ch) == (w, h) { view } else { Affine::scale_non_uniform(cw as f64 / w as f64, ch as f64 / h as f64) * view };
     let (w16, h16) = (cw as u16, ch as u16);
-    let mut ctx = RenderContext::new_with(w16, h16, vello_cpu::RenderSettings { num_threads: default_threads(), ..Default::default() });
-    ctx.set_transform(Affine::IDENTITY);
-    ctx.set_paint(color(opts.ink(doc.settings.page_color.unwrap_or(opts.paper)), 1.0));
-    ctx.fill_rect(&kurbo::Rect::new(0.0, 0.0, w16 as f64, h16 as f64));
-    draw_page_picture(&mut ctx, doc, page, view);
-    let items = page_display(doc, page, &opts.display);
-    let visible = view.inverse().transform_rect_bbox(kurbo::Rect::new(0.0, 0.0, w16 as f64, h16 as f64)).inflate(40.0, 40.0);
-    if let Some(wm) = &doc.settings.watermark {
-        draw_watermark(&mut ctx, view, page, wm, opts);
-    }
-    for it in &items {
-        draw(&mut ctx, doc, it, view, &visible, opts);
-    }
-    ctx.flush();
     let mut pixels = vec![0u8; w16 as usize * h16 as usize * 4];
-    let mut res = Resources::new();
-    if let Some(pm) = vello_cpu::PixmapMut::new(w16, h16, &mut pixels) {
-        ctx.render(pm, &mut res);
-    }
+    with_raster(w16, h16, threads_for(w16, h16), |ctx, res| {
+        ctx.set_transform(Affine::IDENTITY);
+        ctx.set_paint(color(opts.ink(doc.settings.page_color.unwrap_or(opts.paper)), 1.0));
+        ctx.fill_rect(&kurbo::Rect::new(0.0, 0.0, w16 as f64, h16 as f64));
+        draw_page_picture(ctx, doc, page, view);
+        let items = page_display(doc, page, &opts.display);
+        let visible = view.inverse().transform_rect_bbox(kurbo::Rect::new(0.0, 0.0, w16 as f64, h16 as f64)).inflate(40.0, 40.0);
+        if let Some(wm) = &doc.settings.watermark {
+            draw_watermark(ctx, view, page, wm, opts);
+        }
+        for it in &items {
+            draw(ctx, doc, it, view, &visible, opts);
+        }
+        ctx.flush();
+        if let Some(pm) = vello_cpu::PixmapMut::new(w16, h16, &mut pixels) {
+            ctx.render(pm, res);
+        }
+    });
     Rendered { width: w16 as u32, height: h16 as u32, pixels }
 }
 
