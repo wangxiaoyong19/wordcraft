@@ -1297,20 +1297,33 @@ impl WordApp {
             return false;
         }
         if self.quit_requested {
-            return true;
+            return self.allow_close();
         }
         // No document open (#1129): nothing to save.
         if !self.has_document() {
-            return true;
+            return self.allow_close();
         }
         // A comment draft the document refuses is an unsaved change: the prompt can drop it.
         let refused = panes::flush_comment_drafts(self).is_err();
         if !self.session.dirty && !self.save_unconfirmed() && !refused {
-            return true;
+            return self.allow_close();
         }
         // `quit`: once the prompt is answered the window closes too, not just the document.
         let _ = self.run("file.close", json!({"quit": true}));
         false
+    }
+
+    /// The window is closing for good. The recovery copy this session wrote goes with it: the
+    /// document is saved, or the person chose to lose the changes, so the next launch must open
+    /// the editor instead of offering that draft back under File › Recover. Only a crash leaves a
+    /// copy behind, which is what that page is for.
+    pub fn discard_recovery_on_exit(&mut self) {
+        self.session.discard_recovery_on_exit();
+    }
+
+    fn allow_close(&mut self) -> bool {
+        self.discard_recovery_on_exit();
+        true
     }
 
     /// File › Close (Mod+W, Mod+F4) closes the document and keeps the window, as Word does

@@ -70,6 +70,10 @@ impl eframe::App for App {
         if closing && !self.0.close_requested() {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
         } else if (closing || self.0.quit_requested) && !self.0.printing.busy() {
+            // Closing for good, whether the close button asked (above) or `app.quit` set the flag:
+            // the recovery copy this session wrote goes too, or the next launch opens File ›
+            // Recover with a draft the person already declined to keep.
+            self.0.discard_recovery_on_exit();
             // On macOS, letting eframe drop the window inside `-[NSApplication run]` aborts in
             // `-[_NSTouchBarFinderObservation invalidate]`. Command-Q calls `terminate:`. Once
             // the close is allowed, take that path instead of dropping the window on this turn.

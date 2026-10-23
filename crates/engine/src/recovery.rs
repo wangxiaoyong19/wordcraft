@@ -102,6 +102,21 @@ impl Session {
         }
         Ok(())
     }
+    /// The window is really closing: the document is saved, or the person chose not to keep the
+    /// changes, so the copy this session wrote must not be offered back on the next launch. A
+    /// crash never reaches this path, which is what keeps crash recovery meaningful.
+    pub fn discard_recovery_on_exit(&mut self) {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let document = self.document_id();
+            if let Some(r) = &mut self.recovery
+                && r.document_is(document)
+                && let Err(e) = r.purge()
+            {
+                log::warn!("recovery: cannot discard this session's copy on exit: {e}");
+            }
+        }
+    }
     pub(crate) fn recover(&mut self, v: &Value) -> CmdResult {
         let restore = v.get("restore");
         let discard = v.get("discard");

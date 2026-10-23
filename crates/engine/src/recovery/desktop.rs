@@ -628,6 +628,25 @@ mod tests {
         settle(s);
     }
 
+    /// A window that closes for good leaves nothing behind: the draft it declined to keep used to
+    /// stay on disk, and the next launch opened File › Recover to offer it back. A crash never
+    /// reaches this path, so that page still has its purpose.
+    #[test]
+    fn closing_the_window_drops_the_copy_it_wrote() {
+        let profile = Temp::new();
+        let mut s = session(&profile.0);
+        s.run("document.setText", &json!({"text": "Unsaved synthetic draft"})).unwrap();
+        save_now(&mut s);
+        assert_eq!(s.recovery_documents().len(), 1, "an edited document has a copy to offer");
+        assert_eq!(fs::read_dir(&profile.0).unwrap().count(), 1);
+
+        s.discard_recovery_on_exit();
+        settle(&mut s);
+
+        assert!(s.recovery_documents().is_empty(), "nothing is offered back on the next launch");
+        assert_eq!(fs::read_dir(&profile.0).unwrap().count(), 0, "the record's folder is gone");
+    }
+
     #[test]
     fn recovery_commands_only_address_known_profile_records() {
         use crate::file_access::{AutomationRoots, confine};
