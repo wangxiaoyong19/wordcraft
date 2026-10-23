@@ -592,8 +592,28 @@ fn render_region_capped(
     let (cw, ch) = wordcraft_geom::fit_pixels(w, h, max_pixels);
     // Over the cap the whole picture is drawn smaller, not cropped.
     let view = if (cw, ch) == (w, h) { view } else { Affine::scale_non_uniform(cw as f64 / w as f64, ch as f64 / h as f64) * view };
-    let (w16, h16) = (cw as u16, ch as u16);
-    let mut pixels = vec![0u8; w16 as usize * h16 as usize * 4];
+    let mut pixels = vec![0u8; cw as usize * ch as usize * 4];
+    let (w16, h16) = render_into(doc, page, items, cw, ch, view, opts, &mut pixels);
+    Rendered { width: w16 as u32, height: h16 as u32, pixels }
+}
+
+/// [`render_region_capped`]'s work: draw into `pixels`, which holds `w`×`h` pixels of 8-bit
+/// premultiplied RGBA. Split out so a caller that already owns a buffer (the canvas, whose
+/// buffers end up in a texture) can hand it over instead of letting a raster be copied into one.
+#[allow(clippy::too_many_arguments)]
+fn render_into(
+    doc: &Document,
+    page: &Page,
+    items: Option<&[Draw]>,
+    w: u32,
+    h: u32,
+    view: Affine,
+    opts: &RenderOptions,
+    pixels: &mut [u8],
+) -> (u16, u16) {
+    let (w16, h16) = (w as u16, h as u16);
+    debug_assert!(pixels.len() >= w as usize * h as usize * 4, "buffer too small for {w}x{h}");
+    let pixels = &mut pixels[..w as usize * h as usize * 4];
     with_raster(w16, h16, threads_for(w16, h16), |ctx, res| {
         ctx.set_transform(Affine::IDENTITY);
         ctx.set_paint(color(opts.ink(doc.settings.page_color.unwrap_or(opts.paper)), 1.0));
@@ -615,11 +635,11 @@ fn render_region_capped(
             draw(ctx, doc, it, view, &visible, opts);
         }
         ctx.flush();
-        if let Some(pm) = vello_cpu::PixmapMut::new(w16, h16, &mut pixels) {
+        if let Some(pm) = vello_cpu::PixmapMut::new(w16, h16, pixels) {
             ctx.render(pm, res);
         }
     });
-    Rendered { width: w16 as u32, height: h16 as u32, pixels }
+    (w16, h16)
 }
 
 /// The on-screen colour behind page point (`x`, `y`): the paper (page colour), then any
@@ -1287,7 +1307,39 @@ pub fn render_area_with(
     render_region_capped(doc, page, Some(items), pw, ph, view, opts, wordcraft_geom::MAX_RASTER_PIXELS)
 }
 
-/// Draw `items` (page points) alone, on nothing, over the page area (`x`, `y`, `w`×`h` points)
+/// [`render_area_with`] drawing into a buffer the caller keeps: `pixels` holds `w`×`h` pixels of
+/// 8-bit premultiplied RGBA and must be at least `ceil(w*scale) * ceil(h*scale) * 4` bytes. Returns
+/// the pixel size actually drawn (smaller than that only when the area is over the raster cap).
+///
+/// The canvas goes through here so the buffer egui ends up holding is the one the raster was
+/// drawn into. A `Rendered` in between means a second allocation and a copy of the whole raster,
+/// which at 500% is 5 MB a tile — more time than rastering the tile.
+#[allow(clippy::too_many_arguments)]
+pub fn render_area_into(
+    doc: &Document,
+    page: &Page,
+    items: &[Draw],
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    scale: f32,
+    opts: &RenderOptions,
+    pixels: &mut [u8],
+) -> (u32, u32) {
+    let scale = if scale.is_finite() && scale > 0.0 { scale } else { 1.0 };
+    let pw = ((w * scale).ceil() as u32).clamp(1, MAX_SIDE);
+    let ph = ((h * scale).ceil() as u32).clamp(1, MAX_SIDE);
+    let (cw, ch) = wordcraft_geom::fit_pixels(pw, ph, wordcraft_geom::MAX_RASTER_PIXELS);
+    let mut view = Affine::scale(scale as f64) * Affine::translate((-x as f64, -y as f64));
+    if (cw, ch) != (pw, ph) {
+        view = Affine::scale_non_uniform(cw as f64 / pw as f64, ch as f64 / ph as f64) * view;
+    }
+    let (w16, h16) = render_into(doc, page, Some(items), cw, ch, view, opts, pixels);
+    (w16 as u32, h16 as u32)
+}
+
+/// Draw `items` (page points) alone, on nothing, over the page area (`x`, `y`, `w`×`h` points)/// Draw `items` (page points) alone, on nothing, over the page area (`x`, `y`, `w`×`h` points)
 /// at `scale` px/pt: no paper, no watermark. A dragged object's preview.
 pub fn render_items(doc: &Document, items: &[Draw], x: f32, y: f32, w: f32, h: f32, scale: f32, opts: &RenderOptions) -> Rendered {
     let scale = if scale.is_finite() && scale > 0.0 { scale } else { 1.0 };

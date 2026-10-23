@@ -61,7 +61,15 @@ pub fn inspect(app: &mut WordApp, ctx: &egui::Context) -> Value {
         "focused": app.canvas.focused,
         "title": app.title_stem(),
         "dirty": app.session.dirty,
-        "perf": {"frameMs": app.frame_ms, "renderMs": app.canvas.render_ms, "layoutMs": app.session.layout().ms, "fps": app.fps},
+        "perf": {
+            "frameMs": app.frame_ms,
+            "renderMs": app.canvas.render_ms,
+            "handoffMs": app.canvas.handoff_ms,
+            "uploadMs": app.canvas.upload_ms,
+            "rasters": app.canvas.rendered,
+            "layoutMs": app.session.layout().ms,
+            "fps": app.fps,
+        },
     })
 }
 

@@ -102,6 +102,11 @@ pub struct CanvasState {
     /// keyboard straight back to it (`WordApp::refocus_after_chrome_click`).
     pub(crate) widget_id: Option<(egui::Id, u64)>,
     pub render_ms: f64,
+    /// What `render_ms` was spent on in the last frame that rastered anything: the rasters
+    /// themselves are `render_ms` minus these two, and `rendered` is how many went into it.
+    pub handoff_ms: f64,
+    pub upload_ms: f64,
+    pub rendered: u32,
     pub ime_preedit: String,
     /// Document faces added to the interface fonts so the input method's composition (#565) and a
     /// file name in the window caption can be drawn.
@@ -251,6 +256,9 @@ impl Default for CanvasState {
             focused: false,
             widget_id: None,
             render_ms: 0.0,
+            handoff_ms: 0.0,
+            upload_ms: 0.0,
+            rendered: 0,
             ime_preedit: String::new(),
             ime_faces: Vec::new(),
             want_focus: true,
@@ -820,22 +828,13 @@ fn to_screen(origin: Pos2, page_rect: Rect, scale: f32, x: f32, y: f32) -> Pos2 
     pos2(origin.x + page_rect.min.x + x * scale, origin.y + page_rect.min.y + y * scale)
 }
 
-/// A page raster as an egui image. Both hold premultiplied RGBA8, so the pixels go across as they
-/// are: un-premultiplying them for egui to premultiply again gave the same image for two more
-/// passes over every pixel of the page, on each keystroke.
-///
-/// A `Color32` is the same four bytes in the same order, so the copy is a memcpy instead of a
-/// pixel-by-pixel build, which is what it used to be: on a 1224×1584 page (A4 at 200%) here,
-/// rebuilding the image a pixel at a time took 1.46 ms of every keystroke against 0.70 ms as a
-/// memcpy (40 alternating rounds, median 1.46 / 0.70). The cast needs the buffer to start on a
-/// four-byte boundary, which allocators give for a page this size; the fallback keeps the
-/// pixel-by-pixel path for the case that they don't.
-fn page_image(img: &wordcraft_render::Rendered) -> egui::ColorImage {
-    let size = [img.width as usize, img.height as usize];
-    match bytemuck::try_cast_slice::<u8, egui::Color32>(&img.pixels) {
-        Ok(pixels) => egui::ColorImage::new(size, pixels.to_vec()),
-        Err(_) => egui::ColorImage::from_rgba_premultiplied(size, &img.pixels),
-    }
+/// The device-pixel size a whole page needs at `scale`, matching what `render_area_into` works out
+/// from the same numbers.
+fn raster_size(page: &wordcraft_layout::Page, scale: f32) -> (usize, usize) {
+    let side = wordcraft_render::MAX_SIDE as usize;
+    let w = ((page.w.clamp(1.0, 1e6) * scale).ceil().max(1.0) as usize).min(side);
+    let h = ((page.h.clamp(1.0, 1e6) * scale).ceil().max(1.0) as usize).min(side);
+    (w, h)
 }
 
 /// Place a raster at a physical-pixel-aligned origin and its exact device-pixel size.
@@ -1228,6 +1227,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
         // raster it again, and a tile is cheap to hold (0.8 Mpx, 3 MB) compared with a rebuild.
         let mut keep_tile_keys = HashSet::new();
         let mut rendered = 0;
+        let (mut handoff_ms, mut upload_ms) = (0.0f64, 0.0f64);
         let t0 = crate::now_ms();
         let mut rects = Vec::with_capacity(geo.rects.len());
         let content_origin = ui.min_rect().min;
@@ -1265,8 +1265,26 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                 let mut opts = page_render_options(app, dim_body);
                 // Only on the page it is on: the `Pos` can't match an object of another page.
                 opts.display.hide_object = hidden.as_ref().filter(|(page, _)| *page == i).map(|(_, p)| p.clone());
-                let img = wordcraft_render::render_page(&app.session.doc, page, scale_px, &opts);
-                let ci = page_image(&img);
+                let (pw, ph) = raster_size(page, scale_px);
+                let t = crate::now_ms();
+                let mut buf: Vec<egui::Color32> = bytemuck::allocation::zeroed_vec(pw * ph);
+                handoff_ms += crate::now_ms() - t;
+                let list = page_display(&app.session.doc, page, &opts.display);
+                let (rw, rh) = wordcraft_render::render_area_into(
+                    &app.session.doc,
+                    page,
+                    &list,
+                    0.0,
+                    0.0,
+                    page.w,
+                    page.h,
+                    scale_px,
+                    &opts,
+                    bytemuck::cast_slice_mut(&mut buf),
+                );
+                buf.truncate((rw * rh) as usize);
+                let ci = egui::ColorImage::new([rw as usize, rh as usize], buf);
+                let t = crate::now_ms();
                 match app.canvas.textures.get_mut(&i) {
                     Some((k, tex)) => {
                         tex.set(ci, egui::TextureOptions::LINEAR);
@@ -1277,6 +1295,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                         app.canvas.textures.insert(i, (key, tex));
                     }
                 }
+                upload_ms += crate::now_ms() - t;
                 rendered += 1;
                 fresh = true;
             } else if visible && !tiled && !fresh {
@@ -1350,7 +1369,10 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                             let list = items.get_or_insert_with(|| page_display(&app.session.doc, page, &opts.display));
                             // The tiny subtraction avoids a 1px overshoot from round-tripping f32
                             // pixels through page points and render_area's ceil() conversion.
-                            let img = wordcraft_render::render_area_with(
+                            let t = crate::now_ms();
+                            let mut buf: Vec<egui::Color32> = bytemuck::allocation::zeroed_vec(width_px * height_px);
+                            handoff_ms += crate::now_ms() - t;
+                            let (rw, rh) = wordcraft_render::render_area_into(
                                 &app.session.doc,
                                 page,
                                 list,
@@ -1360,8 +1382,11 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                                 (height_px as f32 - 0.01).max(0.01) / scale_px,
                                 scale_px,
                                 &opts,
+                                bytemuck::cast_slice_mut(&mut buf),
                             );
-                            let ci = page_image(&img);
+                            buf.truncate((rw * rh) as usize);
+                            let ci = egui::ColorImage::new([rw as usize, rh as usize], buf);
+                            let t = crate::now_ms();
                             match app.canvas.tiles.get_mut(&id) {
                                 Some((k, tex)) => {
                                     tex.set(ci, egui::TextureOptions::LINEAR);
@@ -1373,6 +1398,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                                     app.canvas.tiles.insert(id, (key, tex));
                                 }
                             }
+                            upload_ms += crate::now_ms() - t;
                             rendered += 1;
                         } else if !fresh {
                             ui.ctx().request_repaint();
@@ -1456,6 +1482,9 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
         }
         if rendered > 0 {
             app.canvas.render_ms = crate::now_ms() - t0;
+            app.canvas.handoff_ms = handoff_ms;
+            app.canvas.upload_ms = upload_ms;
+            app.canvas.rendered = rendered;
         }
         // Drop textures of pages that no longer exist, and of pages scrolled well out of view
         // (#811): scrolling through a long document kept every page it had shown in memory.
@@ -3488,7 +3517,8 @@ mod tests {
         }
     }
 
-    /// What `page_image` replaced: the raster un-premultiplied, for egui to premultiply again.
+    /// The reference the canvas's raster buffer is checked against: the same page with its alpha
+    /// taken straight, which is what egui did with it before the handoff stopped transforming it.
     fn by_straight_alpha(img: &wordcraft_render::Rendered) -> egui::ColorImage {
         egui::ColorImage::from_rgba_unmultiplied([img.width as usize, img.height as usize], &img.to_straight())
     }
@@ -3503,26 +3533,38 @@ mod tests {
         assert!(!is_generated_bookmark_link(""));
     }
 
+    /// The canvas draws a page straight into the buffer egui ends up holding. The bytes there have
+    /// to be the pixels the render crate produced, in the order egui reads them (premultiplied
+    /// RGBA8), which `by_straight_alpha` is the reference for.
     #[test]
-    fn page_image_keeps_every_pixel_the_straight_alpha_round_trip_gave() {
-        // Every premultiplied pixel there is: a channel from 0 up to its alpha, for each alpha.
-        let mut pixels = Vec::new();
-        for a in 0..=255u8 {
-            for c in 0..=a {
-                pixels.extend([c, a, a - c, a]);
-            }
-        }
-        let every = wordcraft_render::Rendered { width: (pixels.len() / 4) as u32, height: 1, pixels };
-        assert!(page_image(&every).pixels == by_straight_alpha(&every).pixels, "a premultiplied pixel changed");
-        // And real pages as the canvas draws them: text, a table, a picture.
+    fn a_page_raster_reaches_egui_unchanged() {
         let mut s = wordcraft_engine::Session::new(wordcraft_engine::sample::sample_document());
         let layout = s.layout();
         assert!(!layout.pages.is_empty());
+        let opts = screen_render_options();
         for page in &layout.pages {
-            let img = wordcraft_render::render_page(&s.doc, page, 2.0, &screen_render_options());
-            let ours = page_image(&img);
-            assert_eq!(ours.size, [img.width as usize, img.height as usize]);
-            assert!(ours.pixels == by_straight_alpha(&img).pixels, "a page pixel changed");
+            let scale = 2.0;
+            // Text, a table, a picture: whatever the page holds.
+            let img = wordcraft_render::render_page(&s.doc, page, scale, &opts);
+            let (w, h) = (img.width as usize, img.height as usize);
+            let want = by_straight_alpha(&img).pixels;
+            let items = wordcraft_layout::display::page_display(&s.doc, page, &opts.display);
+            assert_eq!(raster_size(page, scale), (w, h), "buffer size disagrees with the raster");
+            let mut buf: Vec<egui::Color32> = bytemuck::allocation::zeroed_vec(w * h);
+            let (rw, rh) = wordcraft_render::render_area_into(
+                &s.doc,
+                page,
+                &items,
+                0.0,
+                0.0,
+                page.w,
+                page.h,
+                scale,
+                &opts,
+                bytemuck::cast_slice_mut(&mut buf),
+            );
+            assert_eq!((rw as usize, rh as usize), (w, h));
+            assert!(buf == want, "a page pixel changed");
         }
     }
 
