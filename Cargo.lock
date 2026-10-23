@@ -5378,6 +5378,7 @@ dependencies = [
 name = "wordcraft-ui-egui"
 version = "0.8.0"
 dependencies = [
+ "bytemuck",
  "cfb",
  "craft-ui",
  "egui",

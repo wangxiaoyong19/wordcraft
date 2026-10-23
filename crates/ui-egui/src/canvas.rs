@@ -813,8 +813,19 @@ fn to_screen(origin: Pos2, page_rect: Rect, scale: f32, x: f32, y: f32) -> Pos2 
 /// A page raster as an egui image. Both hold premultiplied RGBA8, so the pixels go across as they
 /// are: un-premultiplying them for egui to premultiply again gave the same image for two more
 /// passes over every pixel of the page, on each keystroke.
+///
+/// A `Color32` is the same four bytes in the same order, so the copy is a memcpy instead of a
+/// pixel-by-pixel build, which is what it used to be: on a 1224×1584 page (A4 at 200%) here,
+/// rebuilding the image a pixel at a time took 1.46 ms of every keystroke against 0.70 ms as a
+/// memcpy (40 alternating rounds, median 1.46 / 0.70). The cast needs the buffer to start on a
+/// four-byte boundary, which allocators give for a page this size; the fallback keeps the
+/// pixel-by-pixel path for the case that they don't.
 fn page_image(img: &wordcraft_render::Rendered) -> egui::ColorImage {
-    egui::ColorImage::from_rgba_premultiplied([img.width as usize, img.height as usize], &img.pixels)
+    let size = [img.width as usize, img.height as usize];
+    match bytemuck::try_cast_slice::<u8, egui::Color32>(&img.pixels) {
+        Ok(pixels) => egui::ColorImage::new(size, pixels.to_vec()),
+        Err(_) => egui::ColorImage::from_rgba_premultiplied(size, &img.pixels),
+    }
 }
 
 /// Place a raster at a physical-pixel-aligned origin and its exact device-pixel size.

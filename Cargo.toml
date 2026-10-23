@@ -36,6 +36,8 @@ thiserror = "2"
 serde = { version = "1", features = ["derive", "rc"] }
 serde_json = { version = "1", features = ["float_roundtrip"] }
 log = "0.4"
+# A page's raster goes to egui as a memcpy rather than a per-pixel build (`page_image`).
+bytemuck = "1"
 proptest = "1"
 rayon = "1"
 unicode-bidi = "0.3"

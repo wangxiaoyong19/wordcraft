@@ -18,7 +18,10 @@ wordcraft-layout = { workspace = true }
 wordcraft-render = { workspace = true }
 wordcraft-engine = { workspace = true }
 wordcraft-zotero = { workspace = true }
-egui = { workspace = true }
+# The `bytemuck` feature is what lets a page's raster reach egui as a memcpy: it gives `Color32`
+# `Pod`, and `page_image` casts the premultiplied RGBA8 bytes instead of rebuilding them.
+egui = { workspace = true, features = ["bytemuck"] }
+bytemuck = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
