@@ -572,11 +572,22 @@ pub fn render_page(doc: &Document, page: &Page, scale: f32, opts: &RenderOptions
 
 /// Render a page into a `w`×`h` raster with `view` (page points → pixels).
 pub fn render_region(doc: &Document, page: &Page, w: u32, h: u32, view: Affine, opts: &RenderOptions) -> Rendered {
-    render_region_capped(doc, page, w, h, view, opts, wordcraft_geom::MAX_RASTER_PIXELS)
+    render_region_capped(doc, page, None, w, h, view, opts, wordcraft_geom::MAX_RASTER_PIXELS)
 }
 
-/// [`render_region`] with an explicit pixel cap (a small one in tests).
-fn render_region_capped(doc: &Document, page: &Page, w: u32, h: u32, view: Affine, opts: &RenderOptions, max_pixels: u64) -> Rendered {
+/// [`render_region`] with an explicit pixel cap (a small one in tests), and optionally the page's
+/// display list already built. A page rastered in tiles goes through here once per tile, and
+/// building that list is about a fifth of a small tile's time; passing it in pays for it once.
+fn render_region_capped(
+    doc: &Document,
+    page: &Page,
+    items: Option<&[Draw]>,
+    w: u32,
+    h: u32,
+    view: Affine,
+    opts: &RenderOptions,
+    max_pixels: u64,
+) -> Rendered {
     let (w, h) = (w.clamp(1, MAX_SIDE), h.clamp(1, MAX_SIDE));
     let (cw, ch) = wordcraft_geom::fit_pixels(w, h, max_pixels);
     // Over the cap the whole picture is drawn smaller, not cropped.
@@ -588,12 +599,19 @@ fn render_region_capped(doc: &Document, page: &Page, w: u32, h: u32, view: Affin
         ctx.set_paint(color(opts.ink(doc.settings.page_color.unwrap_or(opts.paper)), 1.0));
         ctx.fill_rect(&kurbo::Rect::new(0.0, 0.0, w16 as f64, h16 as f64));
         draw_page_picture(ctx, doc, page, view);
-        let items = page_display(doc, page, &opts.display);
+        let built;
+        let items = match items {
+            Some(items) => items,
+            None => {
+                built = page_display(doc, page, &opts.display);
+                &built
+            }
+        };
         let visible = view.inverse().transform_rect_bbox(kurbo::Rect::new(0.0, 0.0, w16 as f64, h16 as f64)).inflate(40.0, 40.0);
         if let Some(wm) = &doc.settings.watermark {
             draw_watermark(ctx, view, page, wm, opts);
         }
-        for it in &items {
+        for it in items {
             draw(ctx, doc, it, view, &visible, opts);
         }
         ctx.flush();
@@ -1247,6 +1265,28 @@ pub fn render_area(doc: &Document, page: &Page, x: f32, y: f32, w: f32, h: f32, 
     render_region(doc, page, pw, ph, view, opts)
 }
 
+/// [`render_area`] with the page's display list already built (`page_display(doc, page,
+/// &opts.display)`; the caller must build it from the same options). A page rastered in tiles
+/// passes through here once per tile, and building that list is about a fifth of a small tile's
+/// time — so a frame that renders six tiles of one page builds it six times over.
+pub fn render_area_with(
+    doc: &Document,
+    page: &Page,
+    items: &[Draw],
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    scale: f32,
+    opts: &RenderOptions,
+) -> Rendered {
+    let scale = if scale.is_finite() && scale > 0.0 { scale } else { 1.0 };
+    let pw = ((w * scale).ceil() as u32).clamp(1, MAX_SIDE);
+    let ph = ((h * scale).ceil() as u32).clamp(1, MAX_SIDE);
+    let view = Affine::scale(scale as f64) * Affine::translate((-x as f64, -y as f64));
+    render_region_capped(doc, page, Some(items), pw, ph, view, opts, wordcraft_geom::MAX_RASTER_PIXELS)
+}
+
 /// Draw `items` (page points) alone, on nothing, over the page area (`x`, `y`, `w`×`h` points)
 /// at `scale` px/pt: no paper, no watermark. A dragged object's preview.
 pub fn render_items(doc: &Document, items: &[Draw], x: f32, y: f32, w: f32, h: f32, scale: f32, opts: &RenderOptions) -> Rendered {
@@ -1574,11 +1614,11 @@ mod tests {
         let d = Document::new();
         let l = layout(&d, &mut LayoutCache::new(), &LayoutOptions::default());
         let opts = RenderOptions::default();
-        let big = render_region_capped(&d, &l.pages[0], 3000, 2000, Affine::scale(4.0), &opts, 100_000);
+        let big = render_region_capped(&d, &l.pages[0], None, 3000, 2000, Affine::scale(4.0), &opts, 100_000);
         assert!(big.width as u64 * big.height as u64 <= 100_000, "{}x{}", big.width, big.height);
         assert!(big.width > 300 && big.height > 200);
         assert_eq!(big.pixels.len() as u64, big.width as u64 * big.height as u64 * 4);
-        let ok = render_region_capped(&d, &l.pages[0], 300, 200, Affine::IDENTITY, &opts, 100_000);
+        let ok = render_region_capped(&d, &l.pages[0], None, 300, 200, Affine::IDENTITY, &opts, 100_000);
         assert_eq!((ok.width, ok.height), (300, 200));
     }
 

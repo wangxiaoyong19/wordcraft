@@ -10,7 +10,7 @@ use std::time::Instant;
 use wordcraft_doc::{Block, Cell, Document, Table};
 use wordcraft_engine::Session;
 use wordcraft_layout::display::{page_display, Draw};
-use wordcraft_render::{render_area, render_page, RenderOptions};
+use wordcraft_render::{render_area, render_area_with, render_page, RenderOptions};
 
 fn table_doc(rows: usize, cols: usize) -> Document {
     let mut d = Document::new();
@@ -97,7 +97,21 @@ fn main() {
     let _ = render_page(&s.doc, page, scale, &opts);
     println!("\nwhole page at {scale}x: {:.2} ms", t0.elapsed().as_secs_f64() * 1000.0);
 
-    println!("\n{:<8} {:>6} {:>14} {:>10}", "tile", "lines", "outside region", "ms");
+    // Every tile goes through `render_region`, which builds the page's display list again.
+    {
+        for _ in 0..3 {
+            std::hint::black_box(page_display(&s.doc, page, &Default::default()));
+        }
+        let mut runs = Vec::new();
+        for _ in 0..9 {
+            let t = Instant::now();
+            std::hint::black_box(page_display(&s.doc, page, &Default::default()));
+            runs.push(t.elapsed().as_secs_f64() * 1000.0);
+        }
+        println!("page_display, once: {:.2} ms", median(runs));
+    }
+
+    println!("\n{:<8} {:>6} {:>14} {:>9} {:>13}", "tile", "lines", "outside region", "area", "area_with");
     for (label, y) in [
         ("top", 0.0f32),
         ("quarter", page.h * 0.25),
@@ -110,13 +124,24 @@ fn main() {
         for _ in 0..2 {
             let _ = render_area(&s.doc, page, 0.0, y, side_pt, side_pt, scale, &opts);
         }
-        let mut runs = Vec::new();
+        let mut plain = Vec::new();
         for _ in 0..9 {
             let t = Instant::now();
             let img = render_area(&s.doc, page, 0.0, y, side_pt, side_pt, scale, &opts);
             std::hint::black_box(&img);
-            runs.push(t.elapsed().as_secs_f64() * 1000.0);
+            plain.push(t.elapsed().as_secs_f64() * 1000.0);
         }
-        println!("{label:<8} {:>6} {:>14} {:>10.2}", best.1, outside, median(runs));
+        let mut built = Vec::new();
+        for _ in 0..9 {
+            let t = Instant::now();
+            let img = render_area_with(&s.doc, page, &items, 0.0, y, side_pt, side_pt, scale, &opts);
+            std::hint::black_box(&img);
+            built.push(t.elapsed().as_secs_f64() * 1000.0);
+        }
+        // Same pixels either way, or the list is not the one the plain call would have built.
+        let a = render_area(&s.doc, page, 0.0, y, side_pt, side_pt, scale, &opts);
+        let b = render_area_with(&s.doc, page, &items, 0.0, y, side_pt, side_pt, scale, &opts);
+        assert_eq!(a.pixels, b.pixels, "{label}: prebuilt list draws something else");
+        println!("{label:<8} {:>6} {:>14} {:>9.2} {:>13.2}", best.1, outside, median(plain), median(built));
     }
 }

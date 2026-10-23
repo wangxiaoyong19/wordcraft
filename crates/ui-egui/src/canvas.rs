@@ -8,7 +8,7 @@ use std::hash::{Hash, Hasher};
 use egui::{Color32, Pos2, Rect, Sense, Stroke, TextureHandle, Ui, pos2, vec2};
 use serde_json::json;
 use wordcraft_doc::{PartKind, Pos, StoryRef};
-use wordcraft_layout::display::CommentDisplay;
+use wordcraft_layout::display::{CommentDisplay, Draw, page_display};
 use wordcraft_layout::{DocLayout, Page, Placed};
 
 use crate::WordApp;
@@ -1325,6 +1325,9 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                     }
                 }
                 let (xs, ys) = visible_tiles(sr, ui.clip_rect().expand(200.0).intersect(band), geo.scale, scale_px, tile_w_px, tile_height_px);
+                // One display list for all of this page's tiles. Each tile's raster builds it
+                // otherwise, and it does not depend on which tile is being drawn.
+                let mut items: Option<Vec<Draw>> = None;
                 for tx in xs {
                     let start_x = tx.saturating_mul(tile_w_px);
                     let width_px = total_w_px.saturating_sub(start_x).min(tile_w_px);
@@ -1344,11 +1347,13 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                             let mut opts = page_render_options(app, dim_body);
                             // Only on the page it is on: the `Pos` can't match an object of another page.
                             opts.display.hide_object = hidden.as_ref().filter(|(page, _)| *page == i).map(|(_, p)| p.clone());
+                            let list = items.get_or_insert_with(|| page_display(&app.session.doc, page, &opts.display));
                             // The tiny subtraction avoids a 1px overshoot from round-tripping f32
                             // pixels through page points and render_area's ceil() conversion.
-                            let img = wordcraft_render::render_area(
+                            let img = wordcraft_render::render_area_with(
                                 &app.session.doc,
                                 page,
+                                list,
                                 start_x as f32 / scale_px,
                                 start_px as f32 / scale_px,
                                 (width_px as f32 - 0.01).max(0.01) / scale_px,
