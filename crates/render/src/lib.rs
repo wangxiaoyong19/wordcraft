@@ -799,9 +799,23 @@ fn draw(ctx: &mut RenderContext, doc: &Document, it: &Draw, view: Affine, visibl
             ctx.fill_rect(&r);
         }
         Draw::Line { x0, y0, x1, y1, width, color: c, stroke, alpha, text_bg } => {
+            let w = *width as f64;
+            // A page rastered in tiles spends most of its time on parts that are not in the tile.
+            // A line draws nothing outside its own extent grown by the stroke (wave amplitude is
+            // 1.2 w, the double rule sits 3 w apart), so far-away ones can be left out before the
+            // path is built and stroked.
+            let pad = w.max(1.0) * 4.0 + 8.0;
+            let lb = kurbo::Rect::new(
+                (*x0 as f64).min(*x1 as f64) - pad,
+                (*y0 as f64).min(*y1 as f64) - pad,
+                (*x0 as f64).max(*x1 as f64) + pad,
+                (*y0 as f64).max(*y1 as f64) + pad,
+            );
+            if !lb.overlaps(*visible) {
+                return;
+            }
             ctx.set_transform(view);
             ctx.set_paint(color(opts.ink_text(*c, *text_bg), *alpha));
-            let w = *width as f64;
             let mut st = kurbo::Stroke::new(w);
             match stroke {
                 Stroke::Dotted => st = st.with_dashes(0.0, [w, w * 2.0]),
@@ -962,6 +976,12 @@ fn draw(ctx: &mut RenderContext, doc: &Document, it: &Draw, view: Affine, visibl
             if path.elements().is_empty() {
                 return;
             }
+            // Built already, so the box is free; a path outside the tile would be stroked and
+            // filled into nothing.
+            let pad = (*stroke_width).clamp(0.0, 200.0) as f64 * 0.5 + 4.0;
+            if !path.bounding_box().inflate(pad, pad).overlaps(*visible) {
+                return;
+            }
             ctx.set_transform(view);
             if let Some(f) = fill {
                 ctx.set_paint(color(opts.ink(*f), 1.0));
@@ -1016,9 +1036,16 @@ fn draw(ctx: &mut RenderContext, doc: &Document, it: &Draw, view: Affine, visibl
         }
         Draw::Shape { rect, kind, fill, stroke, stroke_width, effects, corner, dash } => {
             let r = kurbo::Rect::new(rect.x as f64, rect.y as f64, rect.right() as f64, rect.bottom() as f64);
+            let fx = effects.sanitized();
+            // A shape with effects draws outside its frame (blur, offset); the allowance is the
+            // same one Art takes. Without them only the stroke grows it, and far-away shapes can
+            // be left out before the path is built.
+            let pad = if fx.is_empty() { (*stroke_width).clamp(0.0, 200.0) as f64 + 8.0 } else { 200.0 };
+            if !r.inflate(pad, pad).overlaps(*visible) {
+                return;
+            }
             let path = shape_path(*kind, r, *corner);
             ctx.set_transform(view);
-            let fx = effects.sanitized();
             let can_fill = *kind != ShapeKind::Line && fill.is_some();
             if !fx.is_empty() && (can_fill || stroke.is_some()) {
                 let sw = if stroke_width.is_finite() { stroke_width.clamp(0.25, 200.0) as f64 } else { 0.75 };
