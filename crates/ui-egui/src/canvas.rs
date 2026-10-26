@@ -28,8 +28,11 @@ const TILE_HEIGHT_PX: usize = 1024;
 const TILE_WIDTH_PX: usize = 1024;
 /// A page whose whole raster would need more than this many pixels is split into tiles even when
 /// it fits in one texture. Zoomed in, the whole-page raster costs time in proportion to the
-/// square of the scale, while only the band on screen is ever drawn: a Letter page passes this
-/// budget at about 155% here, and at 500% the whole page is 21.6 Mpx against 0.8 Mpx per tile.
+/// square of the scale, while only the band on screen is ever drawn: at 100% a Letter page is
+/// 0.86 Mpx and stays whole, at 200% it is 3.44 Mpx and is split, and at 500% the whole page is
+/// 21.6 Mpx against 0.8 Mpx per tile. Measured against a budget high enough to keep every page
+/// whole: splitting makes a page 87% cheaper at 300%, 3.2x at 400% and 7x at 500%, and costs
+/// nothing measurable at 200%.
 const TILE_BUDGET_PX: f64 = 2_000_000.0;
 
 /// Drag-select auto-scroll (#688): the pointer within this many points of the viewport's edge
