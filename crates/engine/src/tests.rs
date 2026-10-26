@@ -1656,6 +1656,51 @@ fn clipboard_pane_is_capped_and_rejects_bad_indexes() {
     assert_eq!(s.clip_history.items()[0].text, "w29");
 }
 
+/// A blank paragraph between two lines of text is spacing, not a record: converting the list
+/// must give one row per line, not one row per paragraph. A list pasted from Word or a web page
+/// very often has the blank line, and counting it doubled the table's height.
+#[test]
+fn from_text_skips_blank_paragraphs_between_rows() {
+    let mut s = Session::new(wordcraft_doc::Document::from_text("Name~Qty\n\nNails~10\n\n\nScrews~4\n"));
+    run(&mut s, "select.all", json!({}));
+    run(&mut s, "table.fromText", json!({"separator": "other", "char": "~"}));
+    let t = s.doc.body.iter().find_map(|b| b.as_table()).expect("a table");
+    assert_eq!(t.rows.len(), 3, "three lines of text, three rows");
+    assert_eq!(t.cols(), 2);
+    let cell = |r: usize, c: usize| t.rows[r].cells[c].blocks.iter().filter_map(|b| b.as_para()).map(|p| p.plain_text()).collect::<String>();
+    assert_eq!(cell(0, 0), "Name");
+    assert_eq!(cell(1, 0), "Nails");
+    assert_eq!(cell(2, 1), "4");
+    // One undo puts the list back.
+    while s.undo() {}
+    assert!(s.doc.body.iter().all(|b| b.as_table().is_none()));
+    assert_eq!(text(&s), "Name~Qty\n\nNails~10\n\n\nScrews~4\n");
+}
+
+/// The same rule with no separator: blank paragraphs are skipped when the rows are counted out
+/// in `columns` cells each, and the column count is taken from the lines that have text.
+#[test]
+fn from_text_counts_paragraphs_as_cells_without_the_blanks() {
+    let mut s = Session::new(wordcraft_doc::Document::from_text("A\n\nB\n\n\nC\n\nD"));
+    run(&mut s, "select.all", json!({}));
+    run(&mut s, "table.fromText", json!({"separator": "paragraph", "columns": 2}));
+    let t = s.doc.body.iter().find_map(|b| b.as_table()).expect("a table");
+    assert_eq!(t.rows.len(), 2);
+    assert_eq!(t.cols(), 2);
+}
+
+/// Nothing but blank paragraphs selected: refused, with the text left alone.
+#[test]
+fn from_text_refuses_a_selection_of_blank_paragraphs() {
+    let mut s = Session::new(wordcraft_doc::Document::from_text("A\n\n\n\nB"));
+    run(&mut s, "caret.set", json!({"pos": Pos::body(1, 0)}));
+    run(&mut s, "caret.set", json!({"pos": Pos::body(3, 0), "extend": true}));
+    let e = s.run("table.fromText", &json!({"separator": "other", "char": "~"})).unwrap_err();
+    assert!(e.to_string().contains("select text"), "{e}");
+    assert!(s.doc.body.iter().all(|b| b.as_table().is_none()));
+    assert_eq!(text(&s), "A\n\n\n\nB");
+}
+
 #[test]
 fn tables_commands() {
     let mut s = s();

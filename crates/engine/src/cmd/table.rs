@@ -1220,10 +1220,16 @@ pub fn text_table_lines(s: &Session) -> Result<Vec<String>, CmdError> {
 /// `None` separates at paragraphs: each paragraph is a cell, `columns` (default 1) to a row.
 /// Otherwise each paragraph starts a row; `columns` defaults to the most fields in one, and a
 /// paragraph with more fields than that carries on over the next rows.
+///
+/// An empty paragraph is a gap between rows, never a row by itself: a list is one line of text
+/// per paragraph, and the blank paragraph typed between two items is spacing, not an empty
+/// record. Counting them would double the height of a list pasted from Word or a web page, and
+/// leave the user with a table full of blank rows to delete.
 pub fn text_table_cells(lines: &[String], sep: Option<char>, columns: Option<usize>) -> (Vec<Vec<&str>>, usize) {
+    let lines: Vec<&str> = lines.iter().map(String::as_str).filter(|l| !l.trim().is_empty()).collect();
     let Some(sep) = sep else {
         let cols = columns.unwrap_or(1).clamp(1, wordcraft_doc::table::MAX_COLS);
-        return (lines.chunks(cols).map(|ch| ch.iter().map(String::as_str).collect()).collect(), cols);
+        return (lines.chunks(cols).map(<[&str]>::to_vec).collect(), cols);
     };
     let cols = columns.unwrap_or_else(|| lines.iter().map(|l| l.split(sep).count()).max().unwrap_or(1)).max(1);
     let mut rows = Vec::new();
@@ -1273,6 +1279,10 @@ fn from_text(s: &mut Session, v: &Value) -> CmdResult {
     }
     if cells.len() > wordcraft_doc::table::MAX_ROWS {
         return Err(CmdError::Failed(format!("a table can have at most {} rows", wordcraft_doc::table::MAX_ROWS)));
+    }
+    // Only blank paragraphs were selected: there is nothing to put in a table.
+    if cells.is_empty() {
+        return Err(CmdError::Failed("select text to convert to a table".into()));
     }
     let width = super::page::sect(s).text_width();
     let mut t = Table::new(cells.len().max(1), cols, width);
