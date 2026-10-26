@@ -102,6 +102,20 @@ impl Bus {
     }
 }
 
+/// How long one portal call may take. A portal can accept a method call and then never answer,
+/// and the blocking API waits for that answer with no deadline of its own. Without a bound the
+/// watcher thread sits in the call for the life of the process. Two seconds is far beyond a local
+/// round trip (single-digit milliseconds here) and short enough that a portal which stops
+/// answering costs one poll rather than a thread.
+#[cfg(target_os = "linux")]
+const CALL_TIMEOUT: Duration = Duration::from_secs(2);
+
+/// The watcher's session-bus connection, opened with [`CALL_TIMEOUT`] on every call.
+#[cfg(target_os = "linux")]
+fn connect() -> Option<zbus::blocking::Connection> {
+    zbus::blocking::connection::Builder::session().ok()?.method_timeout(CALL_TIMEOUT).build().ok()
+}
+
 /// Ask the portal once, over `bus`'s connection (opened when there is none). D-Bus calls
 /// block, so this belongs off the UI thread. A connection whose calls all fail is dropped, so
 /// the next poll opens a fresh one (the bus or portal may have restarted).
@@ -111,7 +125,7 @@ fn read(bus: &mut Bus) -> Option<bool> {
     const SETTINGS: &str = "org.freedesktop.portal.Settings";
     const SCHEMAS: [(&str, &str); 2] = [("org.gnome.desktop.interface", "color-scheme"), ("org.freedesktop.interface.color-scheme", "color-scheme")];
     if bus.0.is_none() {
-        bus.0 = zbus::blocking::Connection::session().ok();
+        bus.0 = connect();
     }
     let connection = bus.0.as_ref()?;
     let mut answered = false;
