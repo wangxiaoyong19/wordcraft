@@ -74,6 +74,7 @@ Footnote and endnote editing keeps body and note text at normal opacity, on ligh
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-09 | trivial | File › Recover: Discard all… deletes every listed copy after one confirmation, showing how many; a copy another running instance holds is skipped and reported, and the rest still go. `file.recover={"discardAll":true}` and `ui.recoveryDiscard={"all":true}` for scripts; [details](recovery.md). No readiness percentage change. |
 | 2026-10-18 | trivial | Font list starts at its first row after clearing a no-match query; recent heading remains visible (#2068) |
 | 2026-10-16 | trivial | Dragging the vertical scrollbar shows a tip beside the pointer with the page at the top of the window ("Page 7 of 10"); nothing said where the drag would land (#2551) |
 | 2026-10-17 | trivial | Recipient List dialog: Find in list box with a match count, "Show only records that will be merged", striped rows; hidden rows keep their record for edit and remove (#1576) |

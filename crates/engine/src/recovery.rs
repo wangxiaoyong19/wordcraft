@@ -120,10 +120,11 @@ impl Session {
     pub(crate) fn recover(&mut self, v: &Value) -> CmdResult {
         let restore = v.get("restore");
         let discard = v.get("discard");
-        if restore.is_some() && discard.is_some() {
-            return Err(CmdError::Params("choose restore or discard".into()));
+        let discard_all = v.get("discardAll");
+        if [restore, discard, discard_all].into_iter().flatten().count() > 1 {
+            return Err(CmdError::Params("choose restore, discard or discardAll".into()));
         }
-        if restore.is_some() || discard.is_some() || v.get("refresh").is_some() {
+        if restore.is_some() || discard.is_some() || discard_all.is_some() || v.get("refresh").is_some() {
             #[cfg(not(target_arch = "wasm32"))]
             {
                 let expected = (self.document_id(), self.rev());
@@ -134,6 +135,11 @@ impl Session {
                 } else if let Some(id) = discard {
                     r.discard(id.as_str().ok_or_else(|| CmdError::Params("discard must be a recovery id".into()))?, expected)
                         .map_err(CmdError::Failed)?;
+                } else if let Some(all) = discard_all {
+                    if all.as_bool() != Some(true) {
+                        return Err(CmdError::Params("discardAll must be true".into()));
+                    }
+                    r.discard_all(expected).map_err(CmdError::Failed)?;
                 } else if v.get("refresh").and_then(Value::as_bool) == Some(true) {
                     r.refresh().map_err(CmdError::Failed)?;
                 } else {

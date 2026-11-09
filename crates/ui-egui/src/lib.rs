@@ -1637,16 +1637,20 @@ impl WordApp {
             }
             "ui.recoveryDiscard" => {
                 if let Some(answer) = s("answer") {
-                    let Some(dialogs::Dialog::DiscardRecovery { id, .. }) = self.dialog.clone() else {
-                        return Some(Err("no recovery discard is pending".into()));
+                    // Which confirmation is open decides what "discard" runs: one copy, or all.
+                    let command = match self.dialog.clone() {
+                        Some(dialogs::Dialog::DiscardRecovery { id, .. }) => Some(json!({"discard": id})),
+                        Some(dialogs::Dialog::DiscardAllRecovery { .. }) => Some(json!({"discardAll": true})),
+                        _ => None,
                     };
+                    let Some(command) = command else { return Some(Err("no recovery discard is pending".into())) };
                     match answer {
                         "cancel" => {
                             self.dialog = None;
                             json!({"discarded": false})
                         }
                         "discard" => {
-                            let result = self.execute("file.recover", json!({"discard": id}));
+                            let result = self.execute("file.recover", command);
                             if result.is_ok() {
                                 self.dialog = None;
                             }
@@ -1654,6 +1658,14 @@ impl WordApp {
                         }
                         _ => return Some(Err("`answer` must be discard or cancel".into())),
                     }
+                } else if p.get("all").and_then(Value::as_bool) == Some(true) {
+                    // File › Recover › Discard all…: one confirmation for every listed copy.
+                    let count = self.session.recovery_documents().len();
+                    if count == 0 {
+                        return Some(Err("no recovery copies".into()));
+                    }
+                    self.dialog = Some(dialogs::Dialog::DiscardAllRecovery { count });
+                    json!({"pending": "discardAllRecovery", "count": count})
                 } else {
                     let Some(id) = s("id") else {
                         return Some(Err("`id` is required".into()));

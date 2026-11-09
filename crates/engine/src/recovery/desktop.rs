@@ -280,6 +280,26 @@ impl Store {
         }
         result
     }
+    /// Discards every copy on the list. A record whose lock another instance holds is skipped and
+    /// reported, and the rest still go: one copy being restored elsewhere must not keep the others
+    /// on the page.
+    fn discard_all(&mut self, ids: &[String]) -> Result<(), String> {
+        let mut done = 0;
+        let mut failure = None;
+        for id in ids {
+            match self.discard(id) {
+                Ok(()) => done += 1,
+                Err(e) => {
+                    failure.get_or_insert(e);
+                }
+            }
+        }
+        match failure {
+            None => Ok(()),
+            Some(e) if done == 0 => Err(e),
+            Some(e) => Err(format!("{done} recovery copies were discarded; {e}")),
+        }
+    }
     fn load(&mut self, id: &str) -> Result<Snapshot, String> {
         if !self.entries.contains_key(id) {
             return Err("no such recovery copy".into());
@@ -348,10 +368,12 @@ enum Job {
     Scan,
     Load(String, (u64, u64)),
     Discard(String),
+    DiscardAll(Vec<String>),
 }
 enum Outcome {
     Done,
     Discarded(String),
+    DiscardedAll,
     Loaded(Box<Snapshot>, (u64, u64)),
 }
 struct Event {
@@ -397,6 +419,7 @@ impl Recovery {
                         Job::Scan => store.scan().map(|_| Outcome::Done),
                         Job::Load(id, expected) => store.load(&id).map(|s| Outcome::Loaded(Box::new(s), expected)),
                         Job::Discard(id) => store.discard(&id).map(|_| Outcome::Discarded(id)),
+                        Job::DiscardAll(ids) => store.discard_all(&ids).map(|()| Outcome::DiscardedAll),
                     };
                     if events.send(Event { documents: store.inventory(), outcome: result }).is_err() {
                         break;
@@ -445,6 +468,7 @@ impl Recovery {
                         }
                         None
                     }
+                    Ok(Outcome::DiscardedAll) => None,
                     Ok(Outcome::Loaded(s, expected)) => Some((*s, expected)),
                     Err(e) => {
                         self.error = Some(e);
@@ -528,6 +552,20 @@ impl Recovery {
     }
     pub fn refresh(&mut self) -> Result<(), String> {
         self.queue(Job::Scan)
+    }
+    /// Discards every copy the page lists. The document being edited keeps the same rule as one
+    /// copy: its own copy comes back only after a further edit.
+    pub fn discard_all(&mut self, current: (u64, u64)) -> Result<(), String> {
+        if self.documents.is_empty() {
+            return Err("no recovery copies".into());
+        }
+        let ids: Vec<String> = self.documents.iter().map(|d| d.id.clone()).collect();
+        self.queue(Job::DiscardAll(ids.clone()))?;
+        if self.id.as_ref().is_some_and(|id| ids.contains(id)) {
+            self.id = None;
+            self.revision = Some(current.1);
+        }
+        Ok(())
     }
     pub fn purge(&mut self) -> Result<(), String> {
         let Some(id) = self.id.clone() else { return Ok(()) };
@@ -787,6 +825,36 @@ mod tests {
         assert_eq!(other.inventory().len(), 1);
         other.discard(&id).unwrap();
         assert!(!t.0.join(id).exists(), "discard must release the record slot");
+    }
+
+    #[test]
+    fn discarding_every_copy_clears_the_page_and_keeps_protection_after_an_edit() {
+        let t = Temp::new();
+        // Two drafts, each left behind by its own session, as the page finds them on a launch.
+        for text in ["First synthetic draft", "Second synthetic draft"] {
+            let mut s = session(&t.0);
+            s.run("document.setText", &json!({"text": text})).unwrap();
+            save_now(&mut s);
+        }
+        let mut s = session(&t.0);
+        assert_eq!(s.recovery_documents().len(), 2);
+        s.run("text.insert", &json!({"text": "Editing now. "})).unwrap();
+        save_now(&mut s);
+        assert_eq!(s.recovery_documents().len(), 3, "the open document has a copy of its own");
+
+        assert!(s.run("file.recover", &json!({"discardAll": false})).is_err(), "discardAll must be true");
+        assert!(s.run("file.recover", &json!({"discardAll": true, "discard": new_id().unwrap()})).is_err(), "one request does not both");
+        s.run("file.recover", &json!({"discardAll": true})).unwrap();
+        settle(&mut s);
+        assert!(s.recovery_documents().is_empty());
+        assert_eq!(fs::read_dir(&t.0).unwrap().count(), 0, "every record folder is gone");
+
+        // The document still open keeps the rule a single discard has: no new copy until an edit.
+        save_now(&mut s);
+        assert!(s.recovery_documents().is_empty(), "discard isn't undone by the next timer");
+        s.run("text.insert", &json!({"text": "Further edit. "})).unwrap();
+        save_now(&mut s);
+        assert_eq!(s.recovery_documents().len(), 1, "protection resumes on the next edit");
     }
 
     #[test]

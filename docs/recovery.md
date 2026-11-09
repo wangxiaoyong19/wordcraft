@@ -8,9 +8,11 @@ file is cleared on restore.
 
 Continue without restoring leaves copies available. Discard asks for confirmation and deletes
 the selected copy, including its retained generation. It does not delete the editing document.
-After discarding that document's copy, another copy is made only after a further edit.
-A successful save removes that document's recovery copy on the next worker cycle while it
-remains open. Copies left after switching documents can still be explicitly discarded.
+Discard all asks once for the whole list and deletes every listed copy the same way; a copy
+another running instance holds the lock on is skipped and reported, and the rest still go.
+After discarding this document's copy (with either action), another copy is made only after a
+further edit. A successful save removes that document's recovery copy on the next worker cycle
+while it remains open. Copies left after switching documents can still be explicitly discarded.
 
 Documents with a password do not get plaintext recovery copies. Applying a password waits for
 any pending snapshot, removes the current document's recovery generations, and fails if cleanup
@@ -57,12 +59,13 @@ interval, English fallback for new labels, and no cloud, version-history or brow
 ## Commands and verification
 
 `file.recover={}` reads cached `{enabled,busy,documents,error}`. Each document has `id`, `name`
-and `savedAt`. `{"refresh":true}`, `{"restore":"id"}` and `{"discard":"id"}` queue worker
-operations. Poll until `busy` is false; inspect `error` for failure. A restore is cancelled if the
+and `savedAt`. `{"refresh":true}`, `{"restore":"id"}`, `{"discard":"id"}` and
+`{"discardAll":true}` queue worker operations; at most one of the last three per call. Poll
+until `busy` is false; inspect `error` for failure. A restore is cancelled if the
 document id or revision changes while it loads. Programmatic restores do not open dialogs;
 user restores over dirty work use the existing Save Changes prompt.
-`ui.recoveryDiscard={"id":"id"}` opens confirmation; `{"answer":"discard"}` or
-`{"answer":"cancel"}` answers it.
+`ui.recoveryDiscard={"id":"id"}` opens confirmation; `{"all":true}` opens it for every listed
+copy (`count` in the reply). `{"answer":"discard"}` or `{"answer":"cancel"}` answers either.
 
 Focused tests are `cargo test -p wordcraft-engine recovery`,
 `cargo test -p wordcraft-engine --test recovery_format`, and

@@ -184,6 +184,7 @@ fn recovery_page(app: &mut WordApp, ui: &mut Ui) {
         ui.label(tl!("Local recovery is unavailable or still loading."));
     }
     let documents = app.session.recovery_documents();
+    let count = documents.len();
     if documents.is_empty() && app.session.recovery_ready() {
         ui.label(tl!("No recovery copies."));
     }
@@ -222,6 +223,11 @@ fn recovery_page(app: &mut WordApp, ui: &mut Ui) {
         }
         if ui.add_enabled(!busy && app.session.recovery_ready(), egui::Button::new(tl!("Refresh"))).clicked() {
             let _ = app.run("file.recover", json!({"refresh": true}));
+        }
+        // One confirmation for the whole list, so a page holding many copies doesn't need one
+        // dialog per row.
+        if ui.add_enabled(!busy && app.session.recovery_ready() && count > 0, egui::Button::new(tl!("Discard all…"))).clicked() {
+            let _ = app.run("ui.recoveryDiscard", json!({"all": true}));
         }
     });
 }
@@ -614,6 +620,45 @@ mod tests {
         h.get_by_label("Discard…").click();
         h.run_steps(4);
         h.get_by_label("Discard").click();
+        settle_recovery(&mut h);
+        assert!(h.state().session.recovery_documents().is_empty());
+        assert!(h.query_by_label("No recovery copies.").is_some());
+        drop(h);
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    #[cfg(not(target_arch = "wasm32"))]
+    fn recovery_page_discards_every_copy_after_one_confirmation() {
+        let (app, root) = recovery_app();
+        // A second draft, as a page left by an earlier session shows it.
+        let other = "fedcba9876543210fedcba9876543210";
+        let dir = root.join(other);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            dir.join("snapshot-00000000000000000001.json"),
+            serde_json::to_vec(&json!({
+                "version": 1, "generation": 1, "info": {"id": other, "name": "Synthetic second draft", "savedAt": "2026-10-11T11:00:00Z"},
+                "document": wordcraft_doc::Document::from_text("Second recovered draft")
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        let mut h = recovery_harness(app);
+        settle_recovery(&mut h);
+        // The worker's first scan may already have run before the second record existed.
+        h.state_mut().run("file.recover", json!({"refresh": true})).unwrap();
+        settle_recovery(&mut h);
+        assert_eq!(h.state().session.recovery_documents().len(), 2);
+        h.get_by_label("Discard all…").click();
+        h.run_steps(4);
+        assert!(matches!(h.state().dialog, Some(crate::dialogs::Dialog::DiscardAllRecovery { count: 2 })));
+        h.get_by_label("Cancel").click();
+        h.run_steps(4);
+        assert_eq!(h.state().session.recovery_documents().len(), 2, "cancelling keeps every copy");
+        h.get_by_label("Discard all…").click();
+        h.run_steps(4);
+        h.get_by_label("Discard all").click();
         settle_recovery(&mut h);
         assert!(h.state().session.recovery_documents().is_empty());
         assert!(h.query_by_label("No recovery copies.").is_some());
