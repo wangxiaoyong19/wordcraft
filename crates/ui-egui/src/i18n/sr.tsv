@@ -2302,3 +2302,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Унесите величину у било којој јединици, на пример 5 cm или 300 px. Друга страна се прилагођава, па слика задржава своје пропорције.
 
 	Import…	Увези…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	Аутоматски додај речи на листу (Прво слово)
+	Automatically add words to list (INitial CAps)	Аутоматски додај речи на листу (Почетна велика слова)
+	Body text in a short paragraph to show spacing.	Основни текст у кратком пасусу ради приказа размака.
+	Bookmarks	Обележивачи
+	Continue without restoring	Настави без враћања
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} није могуће сачувати, остаје отворен и ништа није изгубљено: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Обрезивање на страници ради само на неокренутим сликама: прво поставите Заокрет на 0° или користите оквире за обрезивање
+	Current Document	Тренутни документ
+	Delete all recovery copies?	Обрисати све копије за враћање?
+	Discard	Одбаци
+	Discard all	Одбаци све
+	Discard all…	Одбаци све…
+	Discard the recovery copy of {name}?	Одбацити копију за враћање {name}?
+	Discard…	Одбаци…
+	Enter bookmark name:	Унесите назив обележивача:
+	Find “{text}” in the document	Тражи "{text}" у документу
+	For which item:	За који елемент:
+	Imported 1 source	Увезен 1 извор
+	Imported {n} sources	Увезени извори: {n}
+	Insert reference to:	Уметни упуту на:
+	Local recovery is unavailable or still loading.	Локално враћање није доступно или се још учитава.
+	No new sources in that file	Нема нових извора у тој датотеци
+	No recovery copies.	Нема копија за враћање.
+	Nothing of this type in the document.	У документу нема ничега те врсте.
+	Open a document first	Прво отворите документ
+	Recovery copies to delete: {count}	Копије за враћање за брисање: {count}
+	Recovery copy	Копија за враћање
+	Recovery is disabled while this document has a password.	Враћање је онемогућено док документ има лозинку.
+	Reference type:	Врста упуте:
+	Restore	Врати
+	Restore opens an unsaved copy. Your original file stays unchanged.	Враћање отвара несачувану копију. Изворна датотека остаје непромењена.
+	Scale to paper size	Прилагоди величини папира
+	Select a place in this document:	Изаберите место у овом документу:
+	The number must be a divisor of {max}.	Број мора бити делилац од {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Правописни речник за {language} није могуће прочитати па се не проверава. Датотека: {file}. Разлог: {reason}
+	This cannot be undone. Your original file stays unchanged.	Ово се не може опозвати. Изворна датотека остаје непромењена.
+	This cannot be undone. Your original files stay unchanged.	Ово се не може опозвати. Изворне датотеке остају непромењене.
+	This document has no bookmarks.	Овај документ нема обележивача.
+	Top of the Document	Почетак документа
+	Type a page number, or +2 / -1.	Упишите број странице или +2 / -1.
+	Wait for the print job to finish submitting before closing.	Сачекајте да се посао штампе пошаље пре затварања.
+	select a picture first	прво изаберите слику
+	{language} (dictionary unreadable)	{language} (речник није читљив)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (није читљиво: {reason})
+	{name} options	Опције: {name}
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Враћање докумената
+	Discard all recovery copies	Одбаци све копије за враћање
+	Discard recovery copy	Одбаци копију за враћање

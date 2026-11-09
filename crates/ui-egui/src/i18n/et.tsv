@@ -2322,3 +2322,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Sisesta suurus mis tahes ühikus, näiteks 5 cm või 300 px. Teine külg muutub kaasa, nii et pilt säilitab oma proportsioonid.
 
 	Import…	Impordi…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	Lisa sõnad automaatselt loendisse (Esimene täht)
+	Automatically add words to list (INitial CAps)	Lisa sõnad automaatselt loendisse (Alguses suurtähed)
+	Body text in a short paragraph to show spacing.	Põhitekst lühikeses lõigus, et näidata vahesid.
+	Bookmarks	Järjehoidjad
+	Continue without restoring	Jätka taastamata
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} ei saanud salvestada, kuid see on endiselt avatud ja midagi ei läinud kaduma: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Lehel lõikamine toimib ainult pööramata piltidel: määrake esmalt Pööramine 0°-ks või kasutage lõikeraame
+	Current Document	Praegune dokument
+	Delete all recovery copies?	Kas kustutada kõik taastekoopiad?
+	Discard	Loobu
+	Discard all	Loobu kõigist
+	Discard all…	Loobu kõigist…
+	Discard the recovery copy of {name}?	Kas loobuda {name} taastekoopiast?
+	Discard…	Loobu…
+	Enter bookmark name:	Sisestage järjehoidja nimi:
+	Find “{text}” in the document	Otsi dokumendist „{text}”
+	For which item:	Millise üksuse jaoks:
+	Imported 1 source	Imporditud 1 allikas
+	Imported {n} sources	Imporditud allikaid: {n}
+	Insert reference to:	Lisa viide:
+	Local recovery is unavailable or still loading.	Kohalik taastamine pole saadaval või laadib veel.
+	No new sources in that file	Selles failis pole uusi allikaid
+	No recovery copies.	Taastekoopiaid pole.
+	Nothing of this type in the document.	Dokumendis pole midagi sellist.
+	Open a document first	Avage esmalt dokument
+	Recovery copies to delete: {count}	Kustutatavaid taastekoopiaid: {count}
+	Recovery copy	Taastekoopia
+	Recovery is disabled while this document has a password.	Taastamine on välja lülitatud, kuni dokumendil on parool.
+	Reference type:	Viite tüüp:
+	Restore	Taasta
+	Restore opens an unsaved copy. Your original file stays unchanged.	Taastamine avab salvestamata koopia. Algne fail jääb muutumatuks.
+	Scale to paper size	Sobita paberi suurusele
+	Select a place in this document:	Valige koht selles dokumendis:
+	The number must be a divisor of {max}.	Arv peab olema {max} jagaja.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Keele {language} õigekirjasõnastikku ei saanud lugeda, seega seda ei kontrollita. Fail: {file}. Põhjus: {reason}
+	This cannot be undone. Your original file stays unchanged.	Seda ei saa tagasi võtta. Algne fail jääb muutumatuks.
+	This cannot be undone. Your original files stay unchanged.	Seda ei saa tagasi võtta. Algsed failid jäävad muutumatuks.
+	This document has no bookmarks.	Selles dokumendis pole järjehoidjaid.
+	Top of the Document	Dokumendi algus
+	Type a page number, or +2 / -1.	Sisestage leheküljenumber või +2 / -1.
+	Wait for the print job to finish submitting before closing.	Enne sulgemist oodake, kuni printimistöö on saadetud.
+	select a picture first	valige esmalt pilt
+	{language} (dictionary unreadable)	{language} (sõnastikku ei saa lugeda)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (ei saa lugeda: {reason})
+	{name} options	{name} valikud
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Dokumentide taastamine
+	Discard all recovery copies	Loobu kõigist taastekoopiatest
+	Discard recovery copy	Loobu taastekoopiast

@@ -2300,3 +2300,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Введіть розмір у будь-яких одиницях, наприклад 5 cm або 300 px. Інша сторона зміниться разом із нею, тож зображення збереже пропорції.
 
 	Import…	Імпортувати…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	Автоматично додавати слова до списку (Перша літера)
+	Automatically add words to list (INitial CAps)	Автоматично додавати слова до списку (Початкові великі літери)
+	Body text in a short paragraph to show spacing.	Основний текст у короткому абзаці, щоб показати інтервали.
+	Bookmarks	Закладки
+	Continue without restoring	Продовжити без відновлення
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Не вдалося зберегти {name}, документ лишається відкритим, нічого не втрачено: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Обрізання на сторінці працює лише для неповернутих зображень: спершу встановіть обертання 0° або скористайтеся рамками обрізання
+	Current Document	Поточний документ
+	Delete all recovery copies?	Видалити всі копії відновлення?
+	Discard	Відхилити
+	Discard all	Відхилити всі
+	Discard all…	Відхилити всі…
+	Discard the recovery copy of {name}?	Відхилити копію відновлення {name}?
+	Discard…	Відхилити…
+	Enter bookmark name:	Введіть назву закладки:
+	Find “{text}” in the document	Знайти «{text}» у документі
+	For which item:	Для якого елемента:
+	Imported 1 source	Імпортовано 1 джерело
+	Imported {n} sources	Імпортовано джерел: {n}
+	Insert reference to:	Вставити посилання на:
+	Local recovery is unavailable or still loading.	Локальне відновлення недоступне або ще завантажується.
+	No new sources in that file	У цьому файлі немає нових джерел
+	No recovery copies.	Копій відновлення немає.
+	Nothing of this type in the document.	У документі немає нічого такого.
+	Open a document first	Спершу відкрийте документ
+	Recovery copies to delete: {count}	Копій відновлення до видалення: {count}
+	Recovery copy	Копія відновлення
+	Recovery is disabled while this document has a password.	Доки в документа є пароль, відновлення вимкнено.
+	Reference type:	Тип посилання:
+	Restore	Відновити
+	Restore opens an unsaved copy. Your original file stays unchanged.	Відновлення відкриває незбережену копію. Початковий файл не змінюється.
+	Scale to paper size	За розміром паперу
+	Select a place in this document:	Виберіть місце в цьому документі:
+	The number must be a divisor of {max}.	Число має бути дільником {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Не вдалося прочитати орфографічний словник для {language}, тому перевірка не виконується. Файл: {file}. Причина: {reason}
+	This cannot be undone. Your original file stays unchanged.	Скасувати це неможливо. Початковий файл не змінюється.
+	This cannot be undone. Your original files stay unchanged.	Скасувати це неможливо. Початкові файли не змінюються.
+	This document has no bookmarks.	У цьому документі немає закладок.
+	Top of the Document	Початок документа
+	Type a page number, or +2 / -1.	Введіть номер сторінки або +2 / -1.
+	Wait for the print job to finish submitting before closing.	Дочекайтеся надсилання завдання друку, перш ніж закривати.
+	select a picture first	спершу виберіть зображення
+	{language} (dictionary unreadable)	{language} (словник не читається)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (не читається: {reason})
+	{name} options	Параметри: {name}
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Відновлення документів
+	Discard all recovery copies	Відхилити всі копії відновлення
+	Discard recovery copy	Відхилити копію відновлення

@@ -2687,3 +2687,47 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Въведете размер в произволна единица, например 5 cm или 300 px. Другата страна се променя съответно, така че картината запазва пропорциите си.
 
 	Import…	Импортиране…
+	Automatically add words to list (First Letter)	Автоматично добавяне на думи към списъка (Първа буква)
+	Automatically add words to list (INitial CAps)	Автоматично добавяне на думи към списъка (Начални главни букви)
+	Bookmarks	Отметки
+	Continue without restoring	Продължаване без възстановяване
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} не можа да се запази, остава отворен и нищо не е загубено: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Изрязването на страницата работи само с необърнати картинки: първо задайте Завъртане 0° или използвайте рамките за изрязване
+	Current Document	Текущ документ
+	Delete all recovery copies?	Да се изтрият ли всички копия за възстановяване?
+	Discard	Отхвърляне
+	Discard all	Отхвърляне на всички
+	Discard all…	Отхвърляне на всички…
+	Discard the recovery copy of {name}?	Да се отхвърли ли копието за възстановяване на {name}?
+	Discard…	Отхвърляне…
+	Enter bookmark name:	Въведете име на отметка:
+	Find “{text}” in the document	Търсене на „{text}“ в документа
+	Imported 1 source	Импортиран 1 източник
+	Imported {n} sources	Импортирани източници: {n}
+	Local recovery is unavailable or still loading.	Локалното възстановяване не е налично или още се зарежда.
+	No new sources in that file	В този файл няма нови източници
+	No recovery copies.	Няма копия за възстановяване.
+	Nothing of this type in the document.	В документа няма нищо от този вид.
+	Open a document first	Първо отворете документ
+	Recovery copies to delete: {count}	Копия за възстановяване за изтриване: {count}
+	Recovery copy	Копие за възстановяване
+	Recovery is disabled while this document has a password.	Докато документът има парола, възстановяването е изключено.
+	Restore	Възстановяване
+	Restore opens an unsaved copy. Your original file stays unchanged.	Възстановяването отваря незапазено копие. Оригиналният файл остава непроменен.
+	Scale to paper size	Побиране по размера на хартията
+	Select a place in this document:	Изберете място в този документ:
+	The number must be a divisor of {max}.	Числото трябва да е делител на {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Речникът за правопис за {language} не можа да се прочете, затова не се проверява. Файл: {file}. Причина: {reason}
+	This cannot be undone. Your original file stays unchanged.	Това не може да се отмени. Оригиналният файл остава непроменен.
+	This cannot be undone. Your original files stay unchanged.	Това не може да се отмени. Оригиналните файлове остават непроменени.
+	This document has no bookmarks.	Този документ няма отметки.
+	Top of the Document	Начало на документа
+	Type a page number, or +2 / -1.	Въведете номер на страница или +2 / -1.
+	Wait for the print job to finish submitting before closing.	Изчакайте изпращането на задачата за печат, преди да затворите.
+	select a picture first	първо изберете картинка
+	{language} (dictionary unreadable)	{language} (речникът не се чете)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (не се чете: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Възстановяване на документи
+	Discard all recovery copies	Отхвърляне на всички копия за възстановяване
+	Discard recovery copy	Отхвърляне на копието за възстановяване

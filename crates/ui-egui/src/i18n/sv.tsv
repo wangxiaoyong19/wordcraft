@@ -2713,3 +2713,42 @@ preview	Title	Titel
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Skriv en storlek i valfri enhet, till exempel 5 cm eller 300 px. Den andra sidan följer med, så att bilden behåller sina proportioner.
 
 	Import…	Importera…
+	Automatically add words to list (First Letter)	Lägg automatiskt till ord i listan (Första bokstaven)
+	Automatically add words to list (INitial CAps)	Lägg automatiskt till ord i listan (Inledande versaler)
+	Bookmarks	Bokmärken
+	Continue without restoring	Fortsätt utan att återställa
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Det gick inte att spara {name}, men det är fortfarande öppet och inget gick förlorat: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Beskärning på sidan fungerar bara på oroterade bilder: ställ först in Rotation på 0°, eller använd beskärningsramarna
+	Current Document	Aktuellt dokument
+	Delete all recovery copies?	Ta bort alla återställningskopior?
+	Discard	Förkasta
+	Discard all	Förkasta alla
+	Discard all…	Förkasta alla…
+	Discard the recovery copy of {name}?	Förkasta återställningskopian av {name}?
+	Discard…	Förkasta…
+	Imported 1 source	1 källa importerad
+	Imported {n} sources	Importerade källor: {n}
+	Local recovery is unavailable or still loading.	Lokal återställning är inte tillgänglig eller läses fortfarande in.
+	No new sources in that file	Inga nya källor i den filen
+	No recovery copies.	Inga återställningskopior.
+	Nothing of this type in the document.	Det finns inget av det här slaget i dokumentet.
+	Open a document first	Öppna ett dokument först
+	Recovery copies to delete: {count}	Återställningskopior att ta bort: {count}
+	Recovery copy	Återställningskopia
+	Recovery is disabled while this document has a password.	Återställning är inaktiverad så länge dokumentet har ett lösenord.
+	Restore	Återställ
+	Restore opens an unsaved copy. Your original file stays unchanged.	Återställning öppnar en kopia som inte sparats. Din originalfil ändras inte.
+	Scale to paper size	Anpassa till pappersstorlek
+	Select a place in this document:	Välj en plats i det här dokumentet:
+	The number must be a divisor of {max}.	Talet måste vara en delare till {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Stavningsordlistan för {language} kunde inte läsas, så den kontrolleras inte. Fil: {file}. Orsak: {reason}
+	This cannot be undone. Your original file stays unchanged.	Detta kan inte ångras. Din originalfil ändras inte.
+	This cannot be undone. Your original files stay unchanged.	Detta kan inte ångras. Dina originalfiler ändras inte.
+	Top of the Document	Dokumentets början
+	select a picture first	välj en bild först
+	{language} (dictionary unreadable)	{language} (ordlistan kan inte läsas)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (kan inte läsas: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Återställ dokument
+	Discard all recovery copies	Förkasta alla återställningskopior
+	Discard recovery copy	Förkasta återställningskopia

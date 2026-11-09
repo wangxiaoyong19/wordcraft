@@ -2696,3 +2696,47 @@ preview	Title	Пример
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Введите размер в любых единицах, например 5 cm или 300 px. Другая сторона изменится вместе с ней, и рисунок сохранит пропорции.
 
 	Import…	Импорт…
+	Automatically add words to list (First Letter)	Автоматически добавлять слова в список (Первая буква)
+	Automatically add words to list (INitial CAps)	Автоматически добавлять слова в список (Начальные прописные)
+	Bookmarks	Закладки
+	Continue without restoring	Продолжить без восстановления
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Не удалось сохранить {name}, документ остаётся открытым, ничего не потеряно: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Обрезка на странице работает только для неповёрнутых рисунков: сначала задайте поворот 0° или используйте рамки обрезки
+	Current Document	Текущий документ
+	Delete all recovery copies?	Удалить все копии восстановления?
+	Discard	Отклонить
+	Discard all	Отклонить все
+	Discard all…	Отклонить все…
+	Discard the recovery copy of {name}?	Отклонить копию восстановления {name}?
+	Discard…	Отклонить…
+	Enter bookmark name:	Введите имя закладки:
+	Find “{text}” in the document	Найти «{text}» в документе
+	Imported 1 source	Импортирован 1 источник
+	Imported {n} sources	Импортировано источников: {n}
+	Local recovery is unavailable or still loading.	Локальное восстановление недоступно или ещё загружается.
+	No new sources in that file	В этом файле нет новых источников
+	No recovery copies.	Копий восстановления нет.
+	Nothing of this type in the document.	В документе нет ничего такого.
+	Open a document first	Сначала откройте документ
+	Recovery copies to delete: {count}	Копий восстановления к удалению: {count}
+	Recovery copy	Копия восстановления
+	Recovery is disabled while this document has a password.	Пока у документа есть пароль, восстановление отключено.
+	Restore	Восстановить
+	Restore opens an unsaved copy. Your original file stays unchanged.	Восстановление открывает несохранённую копию. Исходный файл не изменяется.
+	Scale to paper size	По размеру бумаги
+	Select a place in this document:	Выберите место в этом документе:
+	The number must be a divisor of {max}.	Число должно быть делителем {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Не удалось прочитать орфографический словарь для {language}, поэтому проверка не выполняется. Файл: {file}. Причина: {reason}
+	This cannot be undone. Your original file stays unchanged.	Отменить это нельзя. Исходный файл не изменяется.
+	This cannot be undone. Your original files stay unchanged.	Отменить это нельзя. Исходные файлы не изменяются.
+	This document has no bookmarks.	В этом документе нет закладок.
+	Top of the Document	Начало документа
+	Type a page number, or +2 / -1.	Введите номер страницы или +2 / -1.
+	Wait for the print job to finish submitting before closing.	Дождитесь отправки задания печати, прежде чем закрывать.
+	select a picture first	сначала выберите рисунок
+	{language} (dictionary unreadable)	{language} (словарь не читается)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (не читается: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Восстановление документов
+	Discard all recovery copies	Отклонить все копии восстановления
+	Discard recovery copy	Отклонить копию восстановления

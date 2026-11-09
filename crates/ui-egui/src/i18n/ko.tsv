@@ -2542,3 +2542,51 @@ preview	Title	제목
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	5 cm 또는 300 px처럼 원하는 단위로 크기를 입력하세요. 다른 쪽도 함께 바뀌어 그림의 비율이 유지됩니다.
 
 	Import…	가져오기…
+	Automatically add words to list (First Letter)	단어를 목록에 자동으로 추가(첫 글자)
+	Automatically add words to list (INitial CAps)	단어를 목록에 자동으로 추가(연속 대문자 시작)
+	Bookmarks	책갈피
+	Continue without restoring	복원하지 않고 계속
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name}을(를) 저장하지 못했습니다. 문서는 열린 상태이며 내용은 손실되지 않았습니다: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	페이지에서 자르기는 회전하지 않은 그림에만 적용됩니다. 먼저 회전을 0°로 설정하거나 자르기 상자를 사용하세요
+	Current Document	현재 문서
+	Delete all recovery copies?	모든 복구 사본을 삭제할까요?
+	Discard	버리기
+	Discard all	모두 버리기
+	Discard all…	모두 버리기…
+	Discard the recovery copy of {name}?	{name}의 복구 사본을 버릴까요?
+	Discard…	버리기…
+	Enter bookmark name:	책갈피 이름 입력:
+	Find “{text}” in the document	문서에서 "{text}" 찾기
+	For which item:	대상 항목:
+	Imported 1 source	원본 1개를 가져왔습니다
+	Imported {n} sources	원본 {n}개를 가져왔습니다
+	Insert reference to:	참조 대상 삽입:
+	Local recovery is unavailable or still loading.	로컬 복구를 사용할 수 없거나 아직 불러오는 중입니다.
+	No new sources in that file	해당 파일에 새 원본이 없습니다
+	No recovery copies.	복구 사본이 없습니다.
+	Nothing of this type in the document.	문서에 이 유형의 항목이 없습니다.
+	Open a document first	먼저 문서를 여세요
+	Recovery copies to delete: {count}	삭제할 복구 사본: {count}
+	Recovery copy	복구 사본
+	Recovery is disabled while this document has a password.	이 문서에 암호가 있는 동안에는 복구를 사용할 수 없습니다.
+	Reference type:	참조 유형:
+	Restore	복원
+	Restore opens an unsaved copy. Your original file stays unchanged.	복원하면 저장하지 않은 사본이 열립니다. 원래 파일은 변경되지 않습니다.
+	Scale to paper size	용지 크기에 맞춤
+	Select a place in this document:	이 문서에서 위치 선택:
+	The number must be a divisor of {max}.	{max}의 약수여야 합니다.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	{language} 맞춤법 사전을 읽을 수 없어 검사하지 않습니다. 파일: {file}. 이유: {reason}
+	This cannot be undone. Your original file stays unchanged.	이 작업은 취소할 수 없습니다. 원래 파일은 변경되지 않습니다.
+	This cannot be undone. Your original files stay unchanged.	이 작업은 취소할 수 없습니다. 원래 파일은 변경되지 않습니다.
+	This document has no bookmarks.	이 문서에는 책갈피가 없습니다.
+	Top of the Document	문서의 맨 위
+	Type a page number, or +2 / -1.	페이지 번호 또는 +2 / -1을 입력하세요.
+	Wait for the print job to finish submitting before closing.	닫기 전에 인쇄 작업 전송이 끝날 때까지 기다리세요.
+	select a picture first	먼저 그림을 선택하세요
+	{language} (dictionary unreadable)	{language} (사전을 읽을 수 없음)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (읽을 수 없음: {reason})
+	{name} options	{name} 옵션
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	문서 복구
+	Discard all recovery copies	모든 복구 사본 버리기
+	Discard recovery copy	복구 사본 버리기

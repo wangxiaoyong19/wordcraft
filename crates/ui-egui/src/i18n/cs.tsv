@@ -2690,3 +2690,47 @@ preview	Title	Ukázka
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Zadejte velikost v libovolné jednotce, například 5 cm nebo 300 px. Druhá strana se přizpůsobí, takže obrázek zachová své proporce.
 
 	Import…	Importovat…
+	Automatically add words to list (First Letter)	Automaticky přidávat slova do seznamu (První písmeno)
+	Automatically add words to list (INitial CAps)	Automaticky přidávat slova do seznamu (Počáteční velká písmena)
+	Bookmarks	Záložky
+	Continue without restoring	Pokračovat bez obnovení
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Soubor {name} se nepodařilo uložit, zůstává otevřený a nic se neztratilo: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Ořez na stránce funguje jen u neotočených obrázků: nejprve nastavte Otočení na 0°, nebo použijte rámečky ořezu
+	Current Document	Aktuální dokument
+	Delete all recovery copies?	Odstranit všechny kopie pro obnovení?
+	Discard	Zahodit
+	Discard all	Zahodit vše
+	Discard all…	Zahodit vše…
+	Discard the recovery copy of {name}?	Zahodit kopii pro obnovení {name}?
+	Discard…	Zahodit…
+	Enter bookmark name:	Zadejte název záložky:
+	Find “{text}” in the document	Najít v dokumentu „{text}“
+	Imported 1 source	Importován 1 zdroj
+	Imported {n} sources	Importováno zdrojů: {n}
+	Local recovery is unavailable or still loading.	Místní obnovení není dostupné nebo se stále načítá.
+	No new sources in that file	V tomto souboru nejsou žádné nové zdroje
+	No recovery copies.	Žádné kopie pro obnovení.
+	Nothing of this type in the document.	V dokumentu nic tohoto typu není.
+	Open a document first	Nejprve otevřete dokument
+	Recovery copies to delete: {count}	Kopie pro obnovení k odstranění: {count}
+	Recovery copy	Kopie pro obnovení
+	Recovery is disabled while this document has a password.	Dokud má dokument heslo, je obnovení zakázáno.
+	Restore	Obnovit
+	Restore opens an unsaved copy. Your original file stays unchanged.	Obnovení otevře neuloženou kopii. Původní soubor zůstává beze změny.
+	Scale to paper size	Přizpůsobit velikosti papíru
+	Select a place in this document:	Vyberte místo v tomto dokumentu:
+	The number must be a divisor of {max}.	Číslo musí být dělitelem {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Slovník pravopisu pro {language} nelze načíst, proto se nekontroluje. Soubor: {file}. Důvod: {reason}
+	This cannot be undone. Your original file stays unchanged.	Tuto akci nelze vrátit zpět. Původní soubor zůstává beze změny.
+	This cannot be undone. Your original files stay unchanged.	Tuto akci nelze vrátit zpět. Původní soubory zůstávají beze změny.
+	This document has no bookmarks.	Tento dokument neobsahuje žádné záložky.
+	Top of the Document	Začátek dokumentu
+	Type a page number, or +2 / -1.	Zadejte číslo stránky nebo +2 / -1.
+	Wait for the print job to finish submitting before closing.	Před zavřením počkejte na dokončení odesílání tiskové úlohy.
+	select a picture first	nejprve vyberte obrázek
+	{language} (dictionary unreadable)	{language} (slovník nelze přečíst)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (nelze přečíst: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Obnovení dokumentů
+	Discard all recovery copies	Zahodit všechny kopie pro obnovení
+	Discard recovery copy	Zahodit kopii pro obnovení

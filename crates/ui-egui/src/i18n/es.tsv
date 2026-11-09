@@ -2654,3 +2654,51 @@ preview	Title	Título
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Escribe un tamaño en cualquier unidad, como 5 cm o 300 px. El otro lado se ajusta, así que la imagen conserva sus proporciones.
 
 	Import…	Importar…
+	Automatically add words to list (First Letter)	Agregar palabras a la lista automáticamente (Primera letra)
+	Automatically add words to list (INitial CAps)	Agregar palabras a la lista automáticamente (Mayúsculas iniciales)
+	Bookmarks	Marcadores
+	Continue without restoring	Continuar sin restaurar
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	No se pudo guardar {name}, pero sigue abierto y no se perdió nada: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	El recorte en la página solo funciona con imágenes sin girar: ponga primero Rotación en 0°, o use los cuadros de recorte
+	Current Document	Documento actual
+	Delete all recovery copies?	¿Eliminar todas las copias de recuperación?
+	Discard	Descartar
+	Discard all	Descartar todo
+	Discard all…	Descartar todo…
+	Discard the recovery copy of {name}?	¿Descartar la copia de recuperación de {name}?
+	Discard…	Descartar…
+	Enter bookmark name:	Escriba el nombre del marcador:
+	Find “{text}” in the document	Buscar «{text}» en el documento
+	For which item:	¿Para qué elemento?
+	Imported 1 source	1 origen importado
+	Imported {n} sources	{n} orígenes importados
+	Insert reference to:	Insertar referencia en:
+	Local recovery is unavailable or still loading.	La recuperación local no está disponible o aún se está cargando.
+	No new sources in that file	No hay orígenes nuevos en ese archivo
+	No recovery copies.	No hay copias de recuperación.
+	Nothing of this type in the document.	No hay nada de este tipo en el documento.
+	Open a document first	Abra primero un documento
+	Recovery copies to delete: {count}	Copias de recuperación que se eliminarán: {count}
+	Recovery copy	Copia de recuperación
+	Recovery is disabled while this document has a password.	La recuperación está deshabilitada mientras este documento tenga contraseña.
+	Reference type:	Tipo de referencia:
+	Restore	Restaurar
+	Restore opens an unsaved copy. Your original file stays unchanged.	Restaurar abre una copia sin guardar. El archivo original no cambia.
+	Scale to paper size	Ajustar al tamaño del papel
+	Select a place in this document:	Seleccione un lugar de este documento:
+	The number must be a divisor of {max}.	El número debe ser un divisor de {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	No se pudo leer el diccionario ortográfico de {language}, así que no se revisa. Archivo: {file}. Motivo: {reason}
+	This cannot be undone. Your original file stays unchanged.	Esta acción no se puede deshacer. El archivo original no cambia.
+	This cannot be undone. Your original files stay unchanged.	Esta acción no se puede deshacer. Los archivos originales no cambian.
+	This document has no bookmarks.	Este documento no tiene marcadores.
+	Top of the Document	Principio del documento
+	Type a page number, or +2 / -1.	Escriba un número de página, o +2 / -1.
+	Wait for the print job to finish submitting before closing.	Espere a que el trabajo de impresión termine de enviarse antes de cerrar.
+	select a picture first	seleccione primero una imagen
+	{language} (dictionary unreadable)	{language} (diccionario ilegible)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (ilegible: {reason})
+	{name} options	Opciones de {name}
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Recuperar documentos
+	Discard all recovery copies	Descartar todas las copias de recuperación
+	Discard recovery copy	Descartar la copia de recuperación

@@ -2700,3 +2700,43 @@ template	Letter	Lettre
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Tapez une taille dans n'importe quelle unité, par exemple 5 cm ou 300 px. L'autre côté suit, et l'image garde ses proportions.
 
 	Import…	Importer…
+	Automatically add words to list (First Letter)	Ajouter automatiquement les mots à la liste (Première lettre)
+	Automatically add words to list (INitial CAps)	Ajouter automatiquement les mots à la liste (Majuscules initiales)
+	Bookmarks	Signets
+	Continue without restoring	Continuer sans restaurer
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Impossible d'enregistrer {name} ; il reste ouvert et rien n'est perdu : {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Le rognage sur la page ne s'applique qu'aux images non pivotées : réglez d'abord Rotation sur 0°, ou utilisez les zones de rognage
+	Current Document	Document actif
+	Delete all recovery copies?	Supprimer toutes les copies de récupération ?
+	Discard	Abandonner
+	Discard all	Tout abandonner
+	Discard all…	Tout abandonner…
+	Discard the recovery copy of {name}?	Abandonner la copie de récupération de {name} ?
+	Discard…	Abandonner…
+	Imported 1 source	1 source importée
+	Imported {n} sources	{n} sources importées
+	Local recovery is unavailable or still loading.	La récupération locale est indisponible ou en cours de chargement.
+	No new sources in that file	Aucune nouvelle source dans ce fichier
+	No recovery copies.	Aucune copie de récupération.
+	Nothing of this type in the document.	Aucun élément de ce type dans le document.
+	Open a document first	Ouvrez d'abord un document
+	Recovery copies to delete: {count}	Copies de récupération à supprimer : {count}
+	Recovery copy	Copie de récupération
+	Recovery is disabled while this document has a password.	La récupération est désactivée tant que ce document a un mot de passe.
+	Restore	Restaurer
+	Restore opens an unsaved copy. Your original file stays unchanged.	Restaurer ouvre une copie non enregistrée. Votre fichier d'origine reste inchangé.
+	Scale to paper size	Mettre à l'échelle du papier
+	Select a place in this document:	Sélectionnez un emplacement dans ce document :
+	The number must be a divisor of {max}.	Le nombre doit être un diviseur de {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Le dictionnaire orthographique pour {language} n'a pas pu être lu, il n'est donc pas utilisé. Fichier : {file}. Raison : {reason}
+	This cannot be undone. Your original file stays unchanged.	Cette action est irréversible. Votre fichier d'origine reste inchangé.
+	This cannot be undone. Your original files stay unchanged.	Cette action est irréversible. Vos fichiers d'origine restent inchangés.
+	Top of the Document	Début du document
+	select a picture first	sélectionnez d'abord une image
+	{language} (dictionary unreadable)	{language} (dictionnaire illisible)
+	{language}: {file} (unreadable: {reason})	{language} : {file} (illisible : {reason})
+	{name} options	Options {name}
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Récupérer des documents
+	Discard all recovery copies	Abandonner toutes les copies de récupération
+	Discard recovery copy	Abandonner la copie de récupération

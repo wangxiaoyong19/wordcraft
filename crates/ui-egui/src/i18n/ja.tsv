@@ -2288,3 +2288,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	5 cm や 300 px など、任意の単位でサイズを入力します。もう一方の辺も合わせて変わるため、図の縦横比は保たれます。
 
 	Import…	インポート…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	単語を自動的にリストに追加する (先頭文字)
+	Automatically add words to list (INitial CAps)	単語を自動的にリストに追加する (語頭の連続大文字)
+	Body text in a short paragraph to show spacing.	余白を示す短い段落の本文です。
+	Bookmarks	ブックマーク
+	Continue without restoring	復元せずに続行
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} を保存できませんでした。開いたままなので内容は失われていません: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	ページ上のトリミングは回転していない図だけで機能します。先に回転を 0° にするか、トリミング枠を使ってください
+	Current Document	現在の文書
+	Delete all recovery copies?	すべての復元用コピーを削除しますか?
+	Discard	破棄
+	Discard all	すべて破棄
+	Discard all…	すべて破棄…
+	Discard the recovery copy of {name}?	{name} の復元用コピーを破棄しますか?
+	Discard…	破棄…
+	Enter bookmark name:	ブックマーク名を入力してください:
+	Find “{text}” in the document	文書内で「{text}」を検索
+	For which item:	どの項目に対して:
+	Imported 1 source	資料文献を 1 件インポートしました
+	Imported {n} sources	資料文献を {n} 件インポートしました
+	Insert reference to:	参照先:
+	Local recovery is unavailable or still loading.	ローカルの復元は利用できないか、まだ読み込み中です。
+	No new sources in that file	そのファイルに新しい資料文献はありません
+	No recovery copies.	復元用コピーはありません。
+	Nothing of this type in the document.	文書内にこの種類の項目はありません。
+	Open a document first	先に文書を開いてください
+	Recovery copies to delete: {count}	削除する復元用コピー: {count}
+	Recovery copy	復元用コピー
+	Recovery is disabled while this document has a password.	この文書にパスワードがある間は復元は無効です。
+	Reference type:	参照の種類:
+	Restore	復元
+	Restore opens an unsaved copy. Your original file stays unchanged.	復元すると未保存のコピーが開きます。元のファイルは変更されません。
+	Scale to paper size	用紙サイズに合わせる
+	Select a place in this document:	この文書内の位置を選択してください:
+	The number must be a divisor of {max}.	{max} の約数にしてください。
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	{language} のスペル辞書を読み取れないため、確認されません。ファイル: {file}。理由: {reason}
+	This cannot be undone. Your original file stays unchanged.	この操作は取り消せません。元のファイルは変更されません。
+	This cannot be undone. Your original files stay unchanged.	この操作は取り消せません。元のファイルは変更されません。
+	This document has no bookmarks.	この文書にブックマークはありません。
+	Top of the Document	文書の先頭
+	Type a page number, or +2 / -1.	ページ番号、または +2 / -1 を入力してください。
+	Wait for the print job to finish submitting before closing.	閉じる前に印刷ジョブの送信が完了するまでお待ちください。
+	select a picture first	先に図を選択してください
+	{language} (dictionary unreadable)	{language} (辞書を読み取れません)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (読み取れません: {reason})
+	{name} options	{name} のオプション
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	文書の復元
+	Discard all recovery copies	すべての復元用コピーを破棄
+	Discard recovery copy	復元用コピーを破棄

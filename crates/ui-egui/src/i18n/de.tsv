@@ -2287,3 +2287,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Geben Sie eine Größe in einer beliebigen Einheit ein, z. B. 5 cm oder 300 px. Die andere Seite passt sich an, sodass das Bild seine Proportionen behält.
 
 	Import…	Importieren…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	Wörter automatisch zur Liste hinzufügen (Erster Buchstabe)
+	Automatically add words to list (INitial CAps)	Wörter automatisch zur Liste hinzufügen (Zwei Großbuchstaben am Wortanfang)
+	Body text in a short paragraph to show spacing.	Fließtext in einem kurzen Absatz, um Abstände zu zeigen.
+	Bookmarks	Textmarken
+	Continue without restoring	Ohne Wiederherstellen fortfahren
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} konnte nicht gespeichert werden, ist aber weiterhin geöffnet und nichts ging verloren: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Zuschneiden auf der Seite wirkt nur bei ungedrehten Bildern: Rotation zuerst auf 0° setzen oder die Zuschneiderahmen verwenden
+	Current Document	Aktuelles Dokument
+	Delete all recovery copies?	Alle Wiederherstellungskopien löschen?
+	Discard	Verwerfen
+	Discard all	Alle verwerfen
+	Discard all…	Alle verwerfen…
+	Discard the recovery copy of {name}?	Die Wiederherstellungskopie von {name} verwerfen?
+	Discard…	Verwerfen…
+	Enter bookmark name:	Textmarkenname eingeben:
+	Find “{text}” in the document	„{text}“ im Dokument suchen
+	For which item:	Für welches Element:
+	Imported 1 source	1 Quelle importiert
+	Imported {n} sources	{n} Quellen importiert
+	Insert reference to:	Verweis einfügen auf:
+	Local recovery is unavailable or still loading.	Die lokale Wiederherstellung ist nicht verfügbar oder lädt noch.
+	No new sources in that file	Keine neuen Quellen in dieser Datei
+	No recovery copies.	Keine Wiederherstellungskopien.
+	Nothing of this type in the document.	Nichts dieser Art im Dokument.
+	Open a document first	Zuerst ein Dokument öffnen
+	Recovery copies to delete: {count}	Zu löschende Wiederherstellungskopien: {count}
+	Recovery copy	Wiederherstellungskopie
+	Recovery is disabled while this document has a password.	Solange dieses Dokument ein Kennwort hat, ist die Wiederherstellung deaktiviert.
+	Reference type:	Verweistyp:
+	Restore	Wiederherstellen
+	Restore opens an unsaved copy. Your original file stays unchanged.	Wiederherstellen öffnet eine ungespeicherte Kopie. Ihre Originaldatei bleibt unverändert.
+	Scale to paper size	Auf Papierformat skalieren
+	Select a place in this document:	Eine Stelle in diesem Dokument auswählen:
+	The number must be a divisor of {max}.	Die Zahl muss ein Teiler von {max} sein.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Das Rechtschreibwörterbuch für {language} konnte nicht gelesen werden, daher wird es nicht geprüft. Datei: {file}. Grund: {reason}
+	This cannot be undone. Your original file stays unchanged.	Dies kann nicht rückgängig gemacht werden. Ihre Originaldatei bleibt unverändert.
+	This cannot be undone. Your original files stay unchanged.	Dies kann nicht rückgängig gemacht werden. Ihre Originaldateien bleiben unverändert.
+	This document has no bookmarks.	Dieses Dokument enthält keine Textmarken.
+	Top of the Document	Dokumentanfang
+	Type a page number, or +2 / -1.	Seitenzahl eingeben oder +2 / -1.
+	Wait for the print job to finish submitting before closing.	Warten Sie, bis der Druckauftrag übermittelt ist, bevor Sie schließen.
+	select a picture first	Zuerst ein Bild auswählen
+	{language} (dictionary unreadable)	{language} (Wörterbuch nicht lesbar)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (nicht lesbar: {reason})
+	{name} options	{name}-Optionen
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Dokumente wiederherstellen
+	Discard all recovery copies	Alle Wiederherstellungskopien verwerfen
+	Discard recovery copy	Wiederherstellungskopie verwerfen

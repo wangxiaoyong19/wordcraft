@@ -2698,3 +2698,42 @@ preview	Title	Naslov
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Upišite veličinu u bilo kojoj jedinici, npr. 5 cm ili 300 px. Druga se strana prilagođava pa slika zadržava svoje proporcije.
 
 	Import…	Uvezi…
+	Automatically add words to list (First Letter)	Automatski dodaj riječi na popis (Prvo slovo)
+	Automatically add words to list (INitial CAps)	Automatski dodaj riječi na popis (Početna velika slova)
+	Bookmarks	Knjižne oznake
+	Continue without restoring	Nastavi bez vraćanja
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} nije moguće spremiti, ostaje otvoren i ništa nije izgubljeno: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Obrezivanje na stranici radi samo na nezakrenutim slikama: prvo postavite Zakretanje na 0° ili upotrijebite okvire za obrezivanje
+	Current Document	Trenutačni dokument
+	Delete all recovery copies?	Izbrisati sve kopije za vraćanje?
+	Discard	Odbaci
+	Discard all	Odbaci sve
+	Discard all…	Odbaci sve…
+	Discard the recovery copy of {name}?	Odbaciti kopiju za vraćanje {name}?
+	Discard…	Odbaci…
+	Imported 1 source	Uvezen 1 izvor
+	Imported {n} sources	Uvezeni izvori: {n}
+	Local recovery is unavailable or still loading.	Lokalno vraćanje nije dostupno ili se još učitava.
+	No new sources in that file	Nema novih izvora u toj datoteci
+	No recovery copies.	Nema kopija za vraćanje.
+	Nothing of this type in the document.	U dokumentu nema ničega te vrste.
+	Open a document first	Najprije otvorite dokument
+	Recovery copies to delete: {count}	Kopije za vraćanje za brisanje: {count}
+	Recovery copy	Kopija za vraćanje
+	Recovery is disabled while this document has a password.	Vraćanje je onemogućeno dok dokument ima lozinku.
+	Restore	Vrati
+	Restore opens an unsaved copy. Your original file stays unchanged.	Vraćanje otvara nespremljenu kopiju. Izvorna datoteka ostaje nepromijenjena.
+	Scale to paper size	Prilagodi veličini papira
+	Select a place in this document:	Odaberite mjesto u ovom dokumentu:
+	The number must be a divisor of {max}.	Broj mora biti djelitelj od {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Pravopisni rječnik za {language} nije moguće pročitati pa se ne provjerava. Datoteka: {file}. Razlog: {reason}
+	This cannot be undone. Your original file stays unchanged.	To se ne može poništiti. Izvorna datoteka ostaje nepromijenjena.
+	This cannot be undone. Your original files stay unchanged.	To se ne može poništiti. Izvorne datoteke ostaju nepromijenjene.
+	Top of the Document	Početak dokumenta
+	select a picture first	najprije odaberite sliku
+	{language} (dictionary unreadable)	{language} (rječnik nije čitljiv)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (nije čitljivo: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Vraćanje dokumenata
+	Discard all recovery copies	Odbaci sve kopije za vraćanje
+	Discard recovery copy	Odbaci kopiju za vraćanje

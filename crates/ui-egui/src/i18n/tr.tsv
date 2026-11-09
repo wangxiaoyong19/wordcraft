@@ -2695,3 +2695,47 @@ preview	Title	Örnek
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Herhangi bir birimde bir boyut yazın, örneğin 5 cm veya 300 px. Diğer kenar da buna uyar, böylece resim oranlarını korur.
 
 	Import…	İçe aktar…
+	Automatically add words to list (First Letter)	Sözcükleri listeye otomatik ekle (İlk harf)
+	Automatically add words to list (INitial CAps)	Sözcükleri listeye otomatik ekle (Baş harfler büyük)
+	Bookmarks	Yer İşaretleri
+	Continue without restoring	Geri yüklemeden devam et
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	{name} kaydedilemedi; belge açık kalıyor ve hiçbir şey kaybolmadı: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Sayfada kırpma yalnızca döndürülmemiş resimlerde çalışır: önce Döndürme değerini 0° yapın veya kırpma çerçevelerini kullanın
+	Current Document	Geçerli Belge
+	Delete all recovery copies?	Tüm geri yükleme kopyaları silinsin mi?
+	Discard	Vazgeç
+	Discard all	Tümünü vazgeç
+	Discard all…	Tümünü vazgeç…
+	Discard the recovery copy of {name}?	{name} geri yükleme kopyasından vazgeçilsin mi?
+	Discard…	Vazgeç…
+	Enter bookmark name:	Yer işareti adını girin:
+	Find “{text}” in the document	Belgede "{text}" ifadesini bul
+	Imported 1 source	1 kaynak içe aktarıldı
+	Imported {n} sources	İçe aktarılan kaynak: {n}
+	Local recovery is unavailable or still loading.	Yerel geri yükleme kullanılamıyor veya hâlâ yükleniyor.
+	No new sources in that file	Bu dosyada yeni kaynak yok
+	No recovery copies.	Geri yükleme kopyası yok.
+	Nothing of this type in the document.	Belgede bu türden bir şey yok.
+	Open a document first	Önce bir belge açın
+	Recovery copies to delete: {count}	Silinecek geri yükleme kopyası: {count}
+	Recovery copy	Geri yükleme kopyası
+	Recovery is disabled while this document has a password.	Belgenin parolası olduğu sürece geri yükleme kapalıdır.
+	Restore	Geri yükle
+	Restore opens an unsaved copy. Your original file stays unchanged.	Geri yükleme kaydedilmemiş bir kopya açar. Özgün dosyanız değişmez.
+	Scale to paper size	Kağıt boyutuna ölçekle
+	Select a place in this document:	Bu belgede bir yer seçin:
+	The number must be a divisor of {max}.	Sayı {max} sayısının böleni olmalıdır.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	{language} için yazım sözlüğü okunamadı, bu yüzden denetlenmiyor. Dosya: {file}. Neden: {reason}
+	This cannot be undone. Your original file stays unchanged.	Bu işlem geri alınamaz. Özgün dosyanız değişmez.
+	This cannot be undone. Your original files stay unchanged.	Bu işlem geri alınamaz. Özgün dosyalarınız değişmez.
+	This document has no bookmarks.	Bu belgede yer işareti yok.
+	Top of the Document	Belgenin başı
+	Type a page number, or +2 / -1.	Sayfa numarası veya +2 / -1 yazın.
+	Wait for the print job to finish submitting before closing.	Kapatmadan önce yazdırma işinin gönderilmesini bekleyin.
+	select a picture first	önce bir resim seçin
+	{language} (dictionary unreadable)	{language} (sözlük okunamıyor)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (okunamıyor: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Belgeleri geri yükle
+	Discard all recovery copies	Tüm geri yükleme kopyalarından vazgeç
+	Discard recovery copy	Geri yükleme kopyasından vazgeç

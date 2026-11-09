@@ -2707,3 +2707,47 @@ preview	Title	Esempio
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Scrivi una dimensione in qualsiasi unità, ad esempio 5 cm o 300 px. L'altro lato si adegua, così l'immagine mantiene le proporzioni.
 
 	Import…	Importa…
+	Automatically add words to list (First Letter)	Aggiungi automaticamente parole all'elenco (Prima lettera)
+	Automatically add words to list (INitial CAps)	Aggiungi automaticamente parole all'elenco (Iniziali maiuscole)
+	Bookmarks	Segnalibri
+	Continue without restoring	Continua senza ripristinare
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Impossibile salvare {name}: resta aperto e nulla è andato perso: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Il ritaglio nella pagina funziona solo con immagini non ruotate: imposta prima Rotazione su 0°, oppure usa i riquadri di ritaglio
+	Current Document	Documento corrente
+	Delete all recovery copies?	Eliminare tutte le copie di ripristino?
+	Discard	Ignora
+	Discard all	Ignora tutto
+	Discard all…	Ignora tutto…
+	Discard the recovery copy of {name}?	Ignorare la copia di ripristino di {name}?
+	Discard…	Ignora…
+	Enter bookmark name:	Immettere il nome del segnalibro:
+	Find “{text}” in the document	Cerca "{text}" nel documento
+	Imported 1 source	1 origine importata
+	Imported {n} sources	{n} origini importate
+	Local recovery is unavailable or still loading.	Il ripristino locale non è disponibile o è ancora in caricamento.
+	No new sources in that file	Nessuna nuova origine in quel file
+	No recovery copies.	Nessuna copia di ripristino.
+	Nothing of this type in the document.	Nessun elemento di questo tipo nel documento.
+	Open a document first	Apri prima un documento
+	Recovery copies to delete: {count}	Copie di ripristino da eliminare: {count}
+	Recovery copy	Copia di ripristino
+	Recovery is disabled while this document has a password.	Il ripristino è disattivato finché il documento ha una password.
+	Restore	Ripristina
+	Restore opens an unsaved copy. Your original file stays unchanged.	Ripristina apre una copia non salvata. Il file originale resta invariato.
+	Scale to paper size	Adatta al formato carta
+	Select a place in this document:	Seleziona una posizione in questo documento:
+	The number must be a divisor of {max}.	Il numero deve essere un divisore di {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Impossibile leggere il dizionario ortografico per {language}, quindi non viene controllato. File: {file}. Motivo: {reason}
+	This cannot be undone. Your original file stays unchanged.	L'operazione non può essere annullata. Il file originale resta invariato.
+	This cannot be undone. Your original files stay unchanged.	L'operazione non può essere annullata. I file originali restano invariati.
+	This document has no bookmarks.	Questo documento non contiene segnalibri.
+	Top of the Document	Inizio del documento
+	Type a page number, or +2 / -1.	Digitare un numero di pagina, oppure +2 / -1.
+	Wait for the print job to finish submitting before closing.	Attendere il completamento dell'invio del processo di stampa prima di chiudere.
+	select a picture first	seleziona prima un'immagine
+	{language} (dictionary unreadable)	{language} (dizionario illeggibile)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (illeggibile: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Recupera documenti
+	Discard all recovery copies	Ignora tutte le copie di ripristino
+	Discard recovery copy	Ignora la copia di ripristino

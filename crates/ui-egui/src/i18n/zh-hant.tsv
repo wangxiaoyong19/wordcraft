@@ -2289,3 +2289,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	可用任何單位輸入大小，例如 5 cm 或 300 px。另一邊隨之調整，圖片保持原有比例。
 
 	Import…	匯入…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	自動將單字加入清單（首字母）
+	Automatically add words to list (INitial CAps)	自動將單字加入清單（開頭連續大寫）
+	Body text in a short paragraph to show spacing.	用於展示間距的短段落內文。
+	Bookmarks	書籤
+	Continue without restoring	不復原，繼續
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	無法儲存 {name}，文件仍保持開啟，內容沒有遺失：{error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	頁面上的裁剪只對未旋轉的圖片有效：請先將旋轉設為 0°，或改用裁剪框
+	Current Document	目前文件
+	Delete all recovery copies?	要捨棄所有復原副本嗎？
+	Discard	捨棄
+	Discard all	全部捨棄
+	Discard all…	全部捨棄…
+	Discard the recovery copy of {name}?	要捨棄 {name} 的復原副本嗎？
+	Discard…	捨棄…
+	Enter bookmark name:	輸入書籤名稱：
+	Find “{text}” in the document	在文件中尋找「{text}」
+	For which item:	引用哪一個項目：
+	Imported 1 source	已匯入 1 個來源
+	Imported {n} sources	已匯入 {n} 個來源
+	Insert reference to:	插入參照指向：
+	Local recovery is unavailable or still loading.	本機復原無法使用或仍在載入。
+	No new sources in that file	該檔案中沒有新的來源
+	No recovery copies.	沒有復原副本。
+	Nothing of this type in the document.	文件中沒有此類內容。
+	Open a document first	請先開啟文件
+	Recovery copies to delete: {count}	復原副本數量：{count}
+	Recovery copy	復原副本
+	Recovery is disabled while this document has a password.	本文件設有密碼，復原功能已停用。
+	Reference type:	參照類型：
+	Restore	復原
+	Restore opens an unsaved copy. Your original file stays unchanged.	復原會開啟未儲存的副本，原始檔案保持不變。
+	Scale to paper size	縮放至紙張大小
+	Select a place in this document:	選擇本文件中的位置：
+	The number must be a divisor of {max}.	該數值必須是 {max} 的因數。
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	無法讀取 {language} 的拼字詞典，因此未檢查拼字。檔案：{file}。原因：{reason}
+	This cannot be undone. Your original file stays unchanged.	此操作無法復原。你的原始檔案保持不變。
+	This cannot be undone. Your original files stay unchanged.	此操作無法復原。你的原始檔案保持不變。
+	This document has no bookmarks.	此文件沒有書籤。
+	Top of the Document	文件頂端
+	Type a page number, or +2 / -1.	輸入頁碼，或用 +2 / -1。
+	Wait for the print job to finish submitting before closing.	請等待列印工作送出完成後再關閉。
+	select a picture first	請先選取圖片
+	{language} (dictionary unreadable)	{language}（詞典無法讀取）
+	{language}: {file} (unreadable: {reason})	{language}：{file}（無法讀取：{reason}）
+	{name} options	{name} 選項
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	復原文件
+	Discard all recovery copies	捨棄所有復原副本
+	Discard recovery copy	捨棄復原副本

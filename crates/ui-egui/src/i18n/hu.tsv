@@ -2694,3 +2694,47 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Írj be egy méretet bármilyen mértékegységben, például 5 cm vagy 300 px. A másik oldal követi, így a kép megtartja az arányait.
 
 	Import…	Importálás…
+	Automatically add words to list (First Letter)	Szavak automatikus hozzáadása a listához (Első betű)
+	Automatically add words to list (INitial CAps)	Szavak automatikus hozzáadása a listához (Kezdő nagybetűk)
+	Bookmarks	Könyvjelzők
+	Continue without restoring	Folytatás visszaállítás nélkül
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	A(z) {name} nem menthető, de nyitva maradt, és semmi sem veszett el: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Az oldalon végzett kivágás csak el nem forgatott képeken működik: állítsa előbb az Elforgatás értékét 0°-ra, vagy használja a kivágási kereteket
+	Current Document	Aktuális dokumentum
+	Delete all recovery copies?	Törli az összes helyreállítási másolatot?
+	Discard	Elvetés
+	Discard all	Összes elvetése
+	Discard all…	Összes elvetése…
+	Discard the recovery copy of {name}?	Elveti a(z) {name} helyreállítási másolatát?
+	Discard…	Elvetés…
+	Enter bookmark name:	Adja meg a könyvjelző nevét:
+	Find “{text}” in the document	A(z) „{text}” keresése a dokumentumban
+	Imported 1 source	1 forrás importálva
+	Imported {n} sources	Importált források: {n}
+	Local recovery is unavailable or still loading.	A helyi helyreállítás nem érhető el, vagy még töltődik.
+	No new sources in that file	Nincs új forrás ebben a fájlban
+	No recovery copies.	Nincsenek helyreállítási másolatok.
+	Nothing of this type in the document.	Nincs ilyen elem a dokumentumban.
+	Open a document first	Először nyisson meg egy dokumentumot
+	Recovery copies to delete: {count}	Törlendő helyreállítási másolatok: {count}
+	Recovery copy	Helyreállítási másolat
+	Recovery is disabled while this document has a password.	Amíg a dokumentumnak jelszava van, a helyreállítás ki van kapcsolva.
+	Restore	Visszaállítás
+	Restore opens an unsaved copy. Your original file stays unchanged.	A visszaállítás egy nem mentett másolatot nyit meg. Az eredeti fájl változatlan marad.
+	Scale to paper size	Méretezés papírmérethez
+	Select a place in this document:	Válasszon helyet ebben a dokumentumban:
+	The number must be a divisor of {max}.	A számnak osztania kell {max} értéket.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	A(z) {language} helyesírási szótára nem olvasható, ezért nem ellenőrzi. Fájl: {file}. Ok: {reason}
+	This cannot be undone. Your original file stays unchanged.	Ez nem vonható vissza. Az eredeti fájl változatlan marad.
+	This cannot be undone. Your original files stay unchanged.	Ez nem vonható vissza. Az eredeti fájlok változatlanok maradnak.
+	This document has no bookmarks.	Ennek a dokumentumnak nincsenek könyvjelzői.
+	Top of the Document	A dokumentum eleje
+	Type a page number, or +2 / -1.	Adjon meg egy oldalszámot, vagy +2 / -1.
+	Wait for the print job to finish submitting before closing.	A bezárás előtt várja meg a nyomtatási feladat elküldését.
+	select a picture first	először válasszon ki egy képet
+	{language} (dictionary unreadable)	{language} (a szótár nem olvasható)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (nem olvasható: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Dokumentumok helyreállítása
+	Discard all recovery copies	Összes helyreállítási másolat elvetése
+	Discard recovery copy	Helyreállítási másolat elvetése

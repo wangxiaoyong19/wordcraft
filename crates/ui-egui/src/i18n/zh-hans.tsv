@@ -2300,3 +2300,53 @@
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	可用任意单位输入大小，例如 5 cm 或 300 px。另一边随之调整，图片保持原有比例。
 
 	Import…	导入…
+	AaBbCcDd	AaBbCcDd
+	Automatically add words to list (First Letter)	自动将单词加入列表（首字母）
+	Automatically add words to list (INitial CAps)	自动将单词加入列表（开头连续大写）
+	Body text in a short paragraph to show spacing.	用于展示间距的短段落正文。
+	Bookmarks	书签
+	Continue without restoring	不恢复，继续
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	无法保存 {name}，文档仍保持打开，内容没有丢失：{error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	页面上的裁剪只对未旋转的图片有效：请先把旋转设为 0°，或改用裁剪框
+	Current Document	当前文档
+	Delete all recovery copies?	要放弃所有恢复副本吗？
+	Discard	放弃
+	Discard all	全部放弃
+	Discard all…	全部放弃…
+	Discard the recovery copy of {name}?	要放弃 {name} 的恢复副本吗？
+	Discard…	放弃…
+	Enter bookmark name:	输入书签名：
+	Find “{text}” in the document	在文档中查找“{text}”
+	For which item:	引用哪一项：
+	Imported 1 source	已导入 1 个源
+	Imported {n} sources	已导入 {n} 个源
+	Insert reference to:	插入引用指向：
+	Local recovery is unavailable or still loading.	本地恢复不可用或仍在加载。
+	No new sources in that file	该文件中没有新的源
+	No recovery copies.	没有恢复副本。
+	Nothing of this type in the document.	文档中没有此类内容。
+	Open a document first	请先打开文档
+	Recovery copies to delete: {count}	恢复副本数量：{count}
+	Recovery copy	恢复副本
+	Recovery is disabled while this document has a password.	本文档设有密码，恢复功能已停用。
+	Reference type:	引用类型：
+	Restore	恢复
+	Restore opens an unsaved copy. Your original file stays unchanged.	恢复会打开一个未保存的副本，原始文件保持不变。
+	Scale to paper size	缩放到纸张大小
+	Select a place in this document:	选择本文档中的位置：
+	The number must be a divisor of {max}.	该数值必须是 {max} 的约数。
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	无法读取 {language} 的拼写词典，因此未检查拼写。文件：{file}。原因：{reason}
+	This cannot be undone. Your original file stays unchanged.	此操作无法撤销。你的原始文件保持不变。
+	This cannot be undone. Your original files stay unchanged.	此操作无法撤销。你的原始文件保持不变。
+	This document has no bookmarks.	此文档没有书签。
+	Top of the Document	文档顶部
+	Type a page number, or +2 / -1.	输入页码，或用 +2 / -1。
+	Wait for the print job to finish submitting before closing.	请等待打印任务提交完成后再关闭。
+	select a picture first	请先选择图片
+	{language} (dictionary unreadable)	{language}（词典无法读取）
+	{language}: {file} (unreadable: {reason})	{language}：{file}（无法读取：{reason}）
+	{name} options	{name} 选项
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	恢复文档
+	Discard all recovery copies	放弃所有恢复副本
+	Discard recovery copy	放弃恢复副本

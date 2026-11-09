@@ -2738,3 +2738,42 @@ template	Letter	Thư
 	Type a size in any unit, such as 5 cm or 300 px. The other side follows, so the picture keeps its proportions.	Nhập kích thước theo đơn vị bất kỳ, ví dụ 5 cm hoặc 300 px. Cạnh còn lại thay đổi theo, nên ảnh giữ nguyên tỷ lệ.
 
 	Import…	Nhập…
+	Automatically add words to list (First Letter)	Tự động thêm từ vào danh sách (Chữ cái đầu)
+	Automatically add words to list (INitial CAps)	Tự động thêm từ vào danh sách (Chữ in hoa đầu)
+	Bookmarks	Dấu trang
+	Continue without restoring	Tiếp tục mà không phục hồi
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	Không lưu được {name}, tệp vẫn mở và không mất nội dung: {error}
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	Cắt trên trang chỉ áp dụng cho ảnh chưa xoay: hãy đặt Xoay về 0° trước, hoặc dùng khung cắt
+	Current Document	Tài liệu hiện tại
+	Delete all recovery copies?	Xóa tất cả bản sao phục hồi?
+	Discard	Bỏ
+	Discard all	Bỏ tất cả
+	Discard all…	Bỏ tất cả…
+	Discard the recovery copy of {name}?	Bỏ bản sao phục hồi của {name}?
+	Discard…	Bỏ…
+	Imported 1 source	Đã nhập 1 nguồn
+	Imported {n} sources	Đã nhập {n} nguồn
+	Local recovery is unavailable or still loading.	Tính năng phục hồi cục bộ không khả dụng hoặc vẫn đang tải.
+	No new sources in that file	Không có nguồn mới trong tệp đó
+	No recovery copies.	Không có bản sao phục hồi.
+	Nothing of this type in the document.	Không có mục nào thuộc loại này trong tài liệu.
+	Open a document first	Hãy mở tài liệu trước
+	Recovery copies to delete: {count}	Bản sao phục hồi sẽ xóa: {count}
+	Recovery copy	Bản sao phục hồi
+	Recovery is disabled while this document has a password.	Tính năng phục hồi bị tắt khi tài liệu này có mật khẩu.
+	Restore	Phục hồi
+	Restore opens an unsaved copy. Your original file stays unchanged.	Phục hồi sẽ mở một bản sao chưa lưu. Tệp gốc của bạn không thay đổi.
+	Scale to paper size	Thu phóng theo khổ giấy
+	Select a place in this document:	Chọn một vị trí trong tài liệu này:
+	The number must be a divisor of {max}.	Số phải là ước của {max}.
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	Không đọc được từ điển chính tả cho {language} nên không kiểm tra. Tệp: {file}. Lý do: {reason}
+	This cannot be undone. Your original file stays unchanged.	Không thể hoàn tác thao tác này. Tệp gốc của bạn không thay đổi.
+	This cannot be undone. Your original files stay unchanged.	Không thể hoàn tác thao tác này. Các tệp gốc của bạn không thay đổi.
+	Top of the Document	Đầu tài liệu
+	select a picture first	hãy chọn một ảnh trước
+	{language} (dictionary unreadable)	{language} (không đọc được từ điển)
+	{language}: {file} (unreadable: {reason})	{language}: {file} (không đọc được: {reason})
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Recover documents	Phục hồi tài liệu
+	Discard all recovery copies	Bỏ tất cả bản sao phục hồi
+	Discard recovery copy	Bỏ bản sao phục hồi
