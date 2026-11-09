@@ -6,16 +6,18 @@ use serde_json::Value;
 use crate::theme::{Tokens, regular};
 use crate::{WordApp, icons};
 
-/// Height of the ribbon content area (without group labels).
-pub const CONTENT_H: f32 = 66.0;
+/// Height of the ribbon content area (without group labels): the 32 px icon block, the two label
+/// lines below it (see [`LABEL_PITCH`]) and the same slack the icons had.
+pub const CONTENT_H: f32 = 68.0;
 /// Height of the group title row under the content.
 pub const LABEL_H: f32 = 18.0;
 /// Large buttons: centre of the 32 px icon, top of the first label line, and the pitch and
-/// height of a label line (`regular(11.5)`; a test checks the font's real line height).
+/// height of a label line (`regular(11.5)`; a test checks the font's real line height). The label
+/// metrics follow [`TEXT_SCALE`](crate::theme::TEXT_SCALE) with the text; the icon block does not.
 pub const BIG_ICON_Y: f32 = 18.0;
 pub const BIG_LABEL_Y: f32 = 36.0;
-pub const LABEL_PITCH: f32 = 13.0;
-pub const LABEL_LINE_H: f32 = 14.0;
+pub const LABEL_PITCH: f32 = 13.0 * crate::theme::TEXT_SCALE;
+pub const LABEL_LINE_H: f32 = 14.0 * crate::theme::TEXT_SCALE;
 // #653: a two-line label ends inside the content, above the group title row.
 const _: () = assert!(BIG_LABEL_Y + LABEL_PITCH + LABEL_LINE_H <= CONTENT_H);
 const _: () = assert!(BIG_ICON_Y + 16.0 <= BIG_LABEL_Y);

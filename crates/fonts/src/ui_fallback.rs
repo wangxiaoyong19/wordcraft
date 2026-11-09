@@ -106,13 +106,19 @@ fn candidates(hans: bool, korean: bool) -> Vec<&'static str> {
     } else {
         (
             &[
+                // 思源黑体 (Source Han Sans) is the Chinese interface face: preferred over the
+                // system's own and over Noto Sans CJK, the same typeface under Google's name.
+                "adobe-source-han-sans/SourceHanSansSC-Regular.otf",
+                "opentype/adobe-source-han-sans/SourceHanSansSC-Regular.otf",
+                "adobe-source-han-sans/SourceHanSansCN-Regular.otf",
+                "opentype/adobe-source-han-sans/SourceHanSansCN-Regular.otf",
+                "opentype/noto/SourceHanSansSC-Regular.otf",
                 "noto-cjk/NotoSansCJK-Regular.ttc",
                 "opentype/noto/NotoSansCJK-Regular.ttc",
                 "google-noto-sans-cjk-fonts/NotoSansCJK-Regular.ttc",
                 "google-noto-cjk/NotoSansCJK-Regular.ttc",
                 "noto-cjk/NotoSansCJKsc-Regular.otf",
                 "opentype/noto/NotoSansCJKsc-Regular.otf",
-                "adobe-source-han-sans/SourceHanSansCN-Regular.otf",
                 "wenquanyi/wqy-microhei/wqy-microhei.ttc",
                 "truetype/wqy/wqy-microhei.ttc",
                 "wenquanyi/wqy-zenhei/wqy-zenhei.ttc",

@@ -609,14 +609,20 @@ fn system_cjk_font(hans: bool, korean: bool) -> Option<&'static wordcraft_fonts:
     .as_ref()
 }
 
+/// The ratio every interface text size is drawn at, applied in [`regular`], [`medium`] and
+/// [`semibold`] and in [`TypeRung::size`]: the sizes written at the call sites are the rungs the
+/// layout was designed on, and one factor widens them all so the proportions between them hold.
+/// 1.08 draws the 12.5 pt body at 13.5 pt.
+pub const TEXT_SCALE: f32 = 1.08;
+
 pub fn medium(size: f32) -> FontId {
-    FontId::new(size, FontFamily::Name("medium".into()))
+    FontId::new(size * TEXT_SCALE, FontFamily::Name("medium".into()))
 }
 pub fn semibold(size: f32) -> FontId {
-    FontId::new(size, FontFamily::Name("semibold".into()))
+    FontId::new(size * TEXT_SCALE, FontFamily::Name("semibold".into()))
 }
 pub fn regular(size: f32) -> FontId {
-    FontId::proportional(size)
+    FontId::proportional(size * TEXT_SCALE)
 }
 
 /// A UI type rung: size, weight pairing, and size-specific letter-spacing (large text is
@@ -632,13 +638,14 @@ pub enum TypeRung {
 }
 
 impl TypeRung {
-    /// Font size in points.
+    /// Font size in points, [`TEXT_SCALE`] already applied.
     pub fn size(self) -> f32 {
-        match self {
+        let base = match self {
             TypeRung::Chrome => 12.5,
             TypeRung::Control => 11.5,
             TypeRung::Caption => 11.0,
-        }
+        };
+        base * TEXT_SCALE
     }
     /// Extra letter-spacing in points (em-relative, so it scales with the size).
     pub fn tracking(self) -> f32 {
@@ -657,14 +664,16 @@ impl TypeRung {
         }
     }
 
+    /// The rung's face at [`size`](Self::size) — already scaled, so it bypasses the scaling in
+    /// [`regular`], [`medium`] and [`semibold`].
     pub fn regular(self) -> FontId {
-        regular(self.size())
+        FontId::proportional(self.size())
     }
     pub fn medium(self) -> FontId {
-        medium(self.size())
+        FontId::new(self.size(), FontFamily::Name("medium".into()))
     }
     pub fn semibold(self) -> FontId {
-        semibold(self.size())
+        FontId::new(self.size(), FontFamily::Name("semibold".into()))
     }
 }
 
@@ -778,6 +787,20 @@ pub fn c32(c: wordcraft_doc::Rgb) -> Color32 {
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeSet;
+
+    /// The rungs and the size helpers carry [`TEXT_SCALE`] exactly once: a rung's face is drawn at
+    /// the size it reports, and a raw size is drawn at that size times the scale.
+    #[test]
+    fn text_sizes_are_scaled_once() {
+        assert_eq!(super::regular(12.5).size, 12.5 * super::TEXT_SCALE);
+        assert_eq!(super::medium(11.0).size, 11.0 * super::TEXT_SCALE);
+        assert_eq!(super::semibold(17.0).size, 17.0 * super::TEXT_SCALE);
+        for rung in [super::TypeRung::Chrome, super::TypeRung::Control, super::TypeRung::Caption] {
+            assert_eq!(rung.regular().size, rung.size(), "{rung:?}");
+            assert_eq!(rung.medium().size, rung.size(), "{rung:?}");
+            assert_eq!(rung.semibold().size, rung.size(), "{rung:?}");
+        }
+    }
 
     /// WCAG contrast ratio between two opaque colours.
     pub(super) fn contrast(a: egui::Color32, b: egui::Color32) -> f32 {
