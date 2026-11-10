@@ -103,11 +103,7 @@ fn main() {
     let sampler = device.create_sampler(&wgpu::SamplerDescriptor::default());
     let texture = device.create_texture(&wgpu::TextureDescriptor {
         label: None,
-        size: wgpu::Extent3d {
-            width: 64,
-            height: 64,
-            depth_or_array_layers: 1,
-        },
+        size: wgpu::Extent3d { width: 64, height: 64, depth_or_array_layers: 1 },
         mip_level_count: 1,
         sample_count: 1,
         dimension: wgpu::TextureDimension::D2,
@@ -130,18 +126,9 @@ fn main() {
         let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
             layout: &layout,
             entries: &[
-                wgpu::BindGroupEntry {
-                    binding: 0,
-                    resource: buf.as_entire_binding(),
-                },
-                wgpu::BindGroupEntry {
-                    binding: 1,
-                    resource: wgpu::BindingResource::TextureView(&view),
-                },
-                wgpu::BindGroupEntry {
-                    binding: 2,
-                    resource: wgpu::BindingResource::Sampler(&sampler),
-                },
+                wgpu::BindGroupEntry { binding: 0, resource: buf.as_entire_binding() },
+                wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::TextureView(&view) },
+                wgpu::BindGroupEntry { binding: 2, resource: wgpu::BindingResource::Sampler(&sampler) },
             ],
             label: None,
         });
@@ -156,18 +143,16 @@ fn main() {
     for round in 0..10 {
         for variant in 0..4 {
             let churn_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-                entries: &[
-                    wgpu::BindGroupLayoutEntry {
-                        binding: 0,
-                        visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
-                        ty: wgpu::BindingType::Buffer {
-                            ty: wgpu::BufferBindingType::Storage { read_only: true },
-                            has_dynamic_offset: variant != 0,
-                            min_binding_size: wgpu::BufferSize::new(16 * (variant as u64 + 1)),
-                        },
-                        count: None,
+                entries: &[wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Storage { read_only: true },
+                        has_dynamic_offset: variant != 0,
+                        min_binding_size: wgpu::BufferSize::new(16 * (variant as u64 + 1)),
                     },
-                ],
+                    count: None,
+                }],
                 label: Some("churn-layout"),
             });
             for _ in 0..64 {
@@ -179,10 +164,7 @@ fn main() {
                 });
                 let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
                     layout: &churn_layout,
-                    entries: &[wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: buf.as_entire_binding(),
-                    }],
+                    entries: &[wgpu::BindGroupEntry { binding: 0, resource: buf.as_entire_binding() }],
                     label: None,
                 });
                 drop(group);
@@ -221,19 +203,12 @@ fn main() {
                 count: None,
             });
         }
-        let wide_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-            entries: &wide_entries,
-            label: Some("wide-layout"),
-        });
+        let wide_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor { entries: &wide_entries, label: Some("wide-layout") });
         let mut views = Vec::new();
-        for i in 0..8 {
+        for _ in 0..8 {
             let t = device.create_texture(&wgpu::TextureDescriptor {
                 label: None,
-                size: wgpu::Extent3d {
-                    width: 32,
-                    height: 32,
-                    depth_or_array_layers: 1,
-                },
+                size: wgpu::Extent3d { width: 32, height: 32, depth_or_array_layers: 1 },
                 mip_level_count: 1,
                 sample_count: 1,
                 dimension: wgpu::TextureDimension::D2,
@@ -246,20 +221,12 @@ fn main() {
         let mut wide_groups = Vec::new();
         for i in 0..300 {
             let entries: Vec<wgpu::BindGroupEntry> = (0..WIDE_IMAGES)
-                .map(|b| wgpu::BindGroupEntry {
-                    binding: b,
-                    resource: wgpu::BindingResource::TextureView(&views[i % views.len()]),
-                })
-                .chain((0..WIDE_SAMPLERS).map(|b| wgpu::BindGroupEntry {
-                    binding: WIDE_IMAGES + b,
-                    resource: wgpu::BindingResource::Sampler(&sampler),
-                }))
+                .map(|b| wgpu::BindGroupEntry { binding: b, resource: wgpu::BindingResource::TextureView(&views[i % views.len()]) })
+                .chain(
+                    (0..WIDE_SAMPLERS).map(|b| wgpu::BindGroupEntry { binding: WIDE_IMAGES + b, resource: wgpu::BindingResource::Sampler(&sampler) }),
+                )
                 .collect();
-            let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                layout: &wide_layout,
-                entries: &entries,
-                label: None,
-            });
+            let group = device.create_bind_group(&wgpu::BindGroupDescriptor { layout: &wide_layout, entries: &entries, label: None });
             wide_groups.push(group);
             if (i + 1) % 100 == 0 {
                 println!("phase 3: {}/300 wide bind groups ({:?})", i + 1, started.elapsed());
@@ -277,29 +244,16 @@ fn main() {
     // pool allocator is the plausible trigger. Cycle a single layout through
     // the same 64-set pool tens of thousands of times.
     {
-        let churn_buf = device.create_buffer(&wgpu::BufferDescriptor {
-            label: None,
-            size: 64,
-            usage: wgpu::BufferUsages::UNIFORM,
-            mapped_at_creation: false,
-        });
+        let churn_buf =
+            device.create_buffer(&wgpu::BufferDescriptor { label: None, size: 64, usage: wgpu::BufferUsages::UNIFORM, mapped_at_creation: false });
         const CYCLES: usize = 50_000;
         for i in 0..CYCLES {
             let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
                 layout: &layout,
                 entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: churn_buf.as_entire_binding(),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: wgpu::BindingResource::TextureView(&view),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 2,
-                        resource: wgpu::BindingResource::Sampler(&sampler),
-                    },
+                    wgpu::BindGroupEntry { binding: 0, resource: churn_buf.as_entire_binding() },
+                    wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::TextureView(&view) },
+                    wgpu::BindGroupEntry { binding: 2, resource: wgpu::BindingResource::Sampler(&sampler) },
                 ],
                 label: None,
             });
@@ -324,12 +278,8 @@ fn main() {
         let view_c = view.clone();
         let sampler_c = sampler.clone();
         let device_c = device.clone();
-        let shared_buf = device.create_buffer(&wgpu::BufferDescriptor {
-            label: None,
-            size: 64,
-            usage: wgpu::BufferUsages::UNIFORM,
-            mapped_at_creation: false,
-        });
+        let shared_buf =
+            device.create_buffer(&wgpu::BufferDescriptor { label: None, size: 64, usage: wgpu::BufferUsages::UNIFORM, mapped_at_creation: false });
         let handles: Vec<_> = (0..THREADS)
             .map(|t| {
                 let layout = layout_c.clone();
@@ -342,18 +292,9 @@ fn main() {
                         let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
                             layout: &layout,
                             entries: &[
-                                wgpu::BindGroupEntry {
-                                    binding: 0,
-                                    resource: buf.as_entire_binding(),
-                                },
-                                wgpu::BindGroupEntry {
-                                    binding: 1,
-                                    resource: wgpu::BindingResource::TextureView(&view),
-                                },
-                                wgpu::BindGroupEntry {
-                                    binding: 2,
-                                    resource: wgpu::BindingResource::Sampler(&sampler),
-                                },
+                                wgpu::BindGroupEntry { binding: 0, resource: buf.as_entire_binding() },
+                                wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::TextureView(&view) },
+                                wgpu::BindGroupEntry { binding: 2, resource: wgpu::BindingResource::Sampler(&sampler) },
                             ],
                             label: None,
                         });
@@ -367,12 +308,7 @@ fn main() {
             h.join().expect("stress thread panicked");
         }
         drop(shared_buf);
-        println!(
-            "phase 5 done: {} threads x {} concurrent cycles ({:?})",
-            THREADS,
-            PER_THREAD,
-            started.elapsed()
-        );
+        println!("phase 5 done: {} threads x {} concurrent cycles ({:?})", THREADS, PER_THREAD, started.elapsed());
     }
 
     // ---- Tear down everything; device drop runs the pool teardown asserts.
@@ -382,8 +318,5 @@ fn main() {
     device.poll(wgpu::PollType::wait_indefinitely()).expect("poll failed");
     drop(device);
 
-    println!(
-        "PASS: descriptor stress completed in {:?} without panic",
-        started.elapsed()
-    );
+    println!("PASS: descriptor stress completed in {:?} without panic", started.elapsed());
 }

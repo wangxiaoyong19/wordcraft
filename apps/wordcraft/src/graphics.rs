@@ -1,6 +1,7 @@
 //! Graphics instance configuration applied before wgpu can initialize any driver: Windows
 //! backends and the DirectX 12 shader compiler, and the Intel Mac indirect-validation skip.
-// On macOS only the indirect-validation items are used outside tests.
+// On macOS only the indirect-validation items are used outside tests. Elsewhere it is the other
+// way round, so those two carry their own `allow`.
 #![cfg_attr(target_os = "macos", allow(dead_code))]
 
 use eframe::{
@@ -14,12 +15,30 @@ use eframe::{
 /// compiler aborts on them, the device is lost and eframe exits before the window opens. WordCraft
 /// issues no indirect draws or dispatches, so Intel Macs skip them; every other GPU keeps wgpu's
 /// default. Same fix as PhotoCraft's storytold/PhotoCraft#3171.
-pub fn skips_indirect_validation(macos: bool, intel: bool) -> bool {
-    macos && intel
+///
+/// `x86_64` is the build's architecture. An x86_64 build also runs on Apple silicon under Rosetta
+/// (#5199), so it skips only when the machine itself isn't Apple silicon.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
+pub fn skips_indirect_validation(macos: bool, x86_64: bool) -> bool {
+    // Short-circuits: only x86_64 macOS builds ask the system.
+    macos && x86_64 && !runs_on_apple_silicon()
+}
+
+/// Whether the machine is Apple silicon, also when this process is translated by Rosetta:
+/// `hw.optional.arm64` describes the hardware, not the process. Assumes not (an Intel Mac) when
+/// the system can't tell.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
+fn runs_on_apple_silicon() -> bool {
+    cfg!(target_os = "macos")
+        && std::process::Command::new("/usr/sbin/sysctl")
+            .args(["-n", "hw.optional.arm64"])
+            .output()
+            .is_ok_and(|out| out.status.success() && out.stdout.trim_ascii() == b"1")
 }
 
 /// Leaves wgpu's indirect-call validation out of the instance eframe creates when `skip`.
 /// `WGPU_VALIDATION_INDIRECT_CALL=1` still turns it back on.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 pub fn configure_indirect_validation(options: &mut NativeOptions, skip: bool) {
     if !skip {
         return;
@@ -140,29 +159,6 @@ pub fn configure(options: &mut NativeOptions, backend_override: Option<Backends>
         }
     };
     configure_backends(options, backends);
-    clamp_device_limits(options);
-}
-
-/// Clamps the requested device limits to what the selected adapter actually
-/// supports. Some drivers (e.g. Phytium ftg340 Vulkan) report lower limits
-/// than wgpu's defaults (max_compute_workgroup_size 128 vs 256); without this
-/// the device request fails even though the adapter is perfectly usable.
-pub fn clamp_device_limits(options: &mut NativeOptions) {
-    use std::sync::Arc;
-    if let eframe::egui_wgpu::WgpuSetup::CreateNew(create) = &mut options.wgpu_options.wgpu_setup {
-        let base = Arc::clone(&create.device_descriptor);
-        create.device_descriptor = Arc::new(move |adapter| {
-            let mut descriptor = base(adapter);
-            let before = descriptor.required_limits.max_compute_workgroup_size_y;
-            descriptor.required_limits = descriptor.required_limits.min(adapter.limits());
-            log::warn!(
-                "graphics: clamp adapter={:?} workgroup_y {before} -> {}",
-                adapter.get_info().name,
-                descriptor.required_limits.max_compute_workgroup_size_y
-            );
-            descriptor
-        });
-    }
 }
 
 /// Lists the DirectX 12 adapters, checking each against the limits eframe's device descriptor
@@ -201,7 +197,8 @@ mod tests {
     #[test]
     fn intel_macs_skip_the_indirect_validation_shaders() {
         // #2652: Metal's Intel compiler aborted on them, losing the device before the window opened.
-        assert!(skips_indirect_validation(true, true));
+        // An x86_64 build on Apple silicon (Rosetta) isn't an Intel Mac (#5199).
+        assert_eq!(skips_indirect_validation(true, true), !host_is_apple_silicon());
         // Apple silicon, Windows and Linux keep wgpu's validation.
         for (macos, intel) in [(true, false), (false, true), (false, false)] {
             assert!(!skips_indirect_validation(macos, intel), "macos={macos} intel={intel}");
@@ -223,6 +220,36 @@ mod tests {
             };
             assert!(!create.instance_descriptor.flags.contains(InstanceFlags::VALIDATION_INDIRECT_CALL));
         }
+    }
+
+    /// Whether the machine running the tests is Apple silicon, whatever this build's architecture.
+    fn host_is_apple_silicon() -> bool {
+        cfg!(target_os = "macos")
+            && std::process::Command::new("/usr/sbin/sysctl")
+                .args(["-n", "hw.optional.arm64"])
+                .output()
+                .is_ok_and(|out| out.status.success() && out.stdout.trim_ascii() == b"1")
+    }
+
+    /// #5199: an x86_64 build running under Rosetta on Apple silicon isn't an Intel Mac and keeps
+    /// wgpu's indirect-call validation.
+    #[test]
+    fn x86_64_builds_on_apple_silicon_keep_indirect_validation() {
+        if !host_is_apple_silicon() {
+            return;
+        }
+        // What main.rs passes from an x86_64 build.
+        assert!(!skips_indirect_validation(true, true), "Rosetta build on Apple silicon must keep validation");
+        let mut options = NativeOptions::default();
+        let WgpuSetup::CreateNew(before) = &options.wgpu_options.wgpu_setup else {
+            panic!("default native options must create a wgpu instance");
+        };
+        let before = before.instance_descriptor.flags;
+        configure_indirect_validation(&mut options, skips_indirect_validation(true, true));
+        let WgpuSetup::CreateNew(create) = &options.wgpu_options.wgpu_setup else {
+            panic!("default native options must create a wgpu instance");
+        };
+        assert_eq!(create.instance_descriptor.flags, before, "indirect-call validation kept");
     }
 
     fn configured_backends(backends: Backends) -> Backends {

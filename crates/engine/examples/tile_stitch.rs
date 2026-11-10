@@ -4,7 +4,7 @@
 //! along a tile edge shows up as a few pixels per boundary with small differences.
 
 use wordcraft_engine::Session;
-use wordcraft_render::{render_area, render_page, RenderOptions};
+use wordcraft_render::{RenderOptions, render_area, render_page};
 
 fn main() {
     let mut s = Session::new(wordcraft_engine::sample::sample_document());
@@ -32,10 +32,12 @@ fn main() {
                     let img = render_area(
                         &s.doc,
                         page,
-                        tx as f32 / scale,
-                        ty as f32 / scale,
-                        (cw as f32 - 0.01).max(0.01) / scale,
-                        (ch as f32 - 0.01).max(0.01) / scale,
+                        wordcraft_geom::Rect {
+                            x: tx as f32 / scale,
+                            y: ty as f32 / scale,
+                            w: (cw as f32 - 0.01).max(0.01) / scale,
+                            h: (ch as f32 - 0.01).max(0.01) / scale,
+                        },
                         scale,
                         &opts,
                     );

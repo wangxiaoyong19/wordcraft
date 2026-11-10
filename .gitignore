@@ -8,3 +8,5 @@ plan/
 /.claude/
 /target-*/
 /craft-fonts/
+/third-party/craft-i18n/
+/third-party/craft-fonts/

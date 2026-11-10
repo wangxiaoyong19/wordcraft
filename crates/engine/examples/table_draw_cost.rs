@@ -9,8 +9,8 @@ use std::time::Instant;
 
 use wordcraft_doc::{Block, Cell, Document, Table};
 use wordcraft_engine::Session;
-use wordcraft_layout::display::{page_display, Draw};
-use wordcraft_render::{render_area, render_area_with, render_page, RenderOptions};
+use wordcraft_layout::display::{Draw, page_display};
+use wordcraft_render::{RenderOptions, render_area, render_items, render_page};
 
 fn table_doc(rows: usize, cols: usize) -> Document {
     let mut d = Document::new();
@@ -112,35 +112,30 @@ fn main() {
     }
 
     println!("\n{:<8} {:>6} {:>14} {:>9} {:>13}", "tile", "lines", "outside region", "area", "area_with");
-    for (label, y) in [
-        ("top", 0.0f32),
-        ("quarter", page.h * 0.25),
-        ("mid", page.h * 0.5),
-        ("bottom", (page.h - side_pt).max(0.0)),
-    ] {
+    for (label, y) in [("top", 0.0f32), ("quarter", page.h * 0.25), ("mid", page.h * 0.5), ("bottom", (page.h - side_pt).max(0.0))] {
         // `render_region` grows the page rect by 40 pt to catch items that reach in. Same here.
         let r = (-40.0f64, y as f64 - 40.0, side_pt as f64 + 40.0, y as f64 + side_pt as f64 + 40.0);
         let outside = lines_outside(&items, r);
         for _ in 0..2 {
-            let _ = render_area(&s.doc, page, 0.0, y, side_pt, side_pt, scale, &opts);
+            let _ = render_area(&s.doc, page, wordcraft_geom::Rect { x: 0.0, y, w: side_pt, h: side_pt }, scale, &opts);
         }
         let mut plain = Vec::new();
         for _ in 0..9 {
             let t = Instant::now();
-            let img = render_area(&s.doc, page, 0.0, y, side_pt, side_pt, scale, &opts);
+            let img = render_area(&s.doc, page, wordcraft_geom::Rect { x: 0.0, y, w: side_pt, h: side_pt }, scale, &opts);
             std::hint::black_box(&img);
             plain.push(t.elapsed().as_secs_f64() * 1000.0);
         }
         let mut built = Vec::new();
         for _ in 0..9 {
             let t = Instant::now();
-            let img = render_area_with(&s.doc, page, &items, 0.0, y, side_pt, side_pt, scale, &opts);
+            let img = render_items(&s.doc, &items, wordcraft_geom::Rect { x: 0.0, y, w: side_pt, h: side_pt }, scale, &opts);
             std::hint::black_box(&img);
             built.push(t.elapsed().as_secs_f64() * 1000.0);
         }
         // Same pixels either way, or the list is not the one the plain call would have built.
-        let a = render_area(&s.doc, page, 0.0, y, side_pt, side_pt, scale, &opts);
-        let b = render_area_with(&s.doc, page, &items, 0.0, y, side_pt, side_pt, scale, &opts);
+        let a = render_area(&s.doc, page, wordcraft_geom::Rect { x: 0.0, y, w: side_pt, h: side_pt }, scale, &opts);
+        let b = render_items(&s.doc, &items, wordcraft_geom::Rect { x: 0.0, y, w: side_pt, h: side_pt }, scale, &opts);
         assert_eq!(a.pixels, b.pixels, "{label}: prebuilt list draws something else");
         println!("{label:<8} {:>6} {:>14} {:>9.2} {:>13.2}", best.1, outside, median(plain), median(built));
     }
