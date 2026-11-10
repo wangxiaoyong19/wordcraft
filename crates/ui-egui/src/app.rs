@@ -7,7 +7,7 @@ use super::{
     AwaitingSave, ControlRequest, DEFAULT_TAB, MAX_DICTIONARY, MAX_RECENT, QUIT, SaveInFlight, Session, UiState, Value, WordApp, applied_font,
     async_saves, backstage, canvas, chrome, colors, content_controls, crop, desktop_theme, dialogs, dialogs_table_style, documents, file_dialogs,
     i18n, json, keys, keytips, options, panes, paste_picture, printing, push_recent_font, read_aloud, recent_fonts_from, ribbon, scroll,
-    system_clipboard, table_pen, theme, updates_ui, widgets, window_ui, windows, zotero,
+    system_clipboard, table_pen, theme, widgets, window_ui, windows, zotero,
 };
 
 mod commands;
@@ -104,7 +104,6 @@ impl WordApp {
             print_feedback_seen: None,
             integrated_titlebar: false,
             mac_titlebar: chrome::MacTitleBar::default(),
-            updates_rt: updates_ui::Runtime::default(),
             packs_rt: Default::default(),
             control_rx: None,
             shots: crate::control::Shots::default(),
@@ -237,7 +236,6 @@ impl WordApp {
         // #2726: egui's AccessKit update must carry the focused node in its node list; a frame
         // that drops it panics in `accesskit_consumer` and closes the window (see `a11y::FocusGuard`).
         ctx.add_plugin(super::a11y::FocusGuard);
-        updates_ui::tick(self, ctx);
         crate::language_packs::tick(self);
         let lang = i18n::Lang::from_pref(&self.ui.language);
         i18n::set_current(lang);

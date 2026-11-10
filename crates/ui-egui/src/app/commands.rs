@@ -511,10 +511,6 @@ impl WordApp {
     pub(crate) fn ui_command(&mut self, id: &str, p: &Value) -> Option<Result<Value, String>> {
         let s = |k: &str| p.get(k).and_then(Value::as_str);
         Some(Ok(match id {
-            "ui.checkForUpdates" | "help.checkForUpdates" => {
-                crate::updates_ui::check(self);
-                Value::Null
-            }
             "ui.tab" => {
                 let tab = s("tab").unwrap_or("Home").to_string();
                 if tab == "File" {
@@ -1135,7 +1131,6 @@ pub(crate) fn works_without_document(id: &str) -> bool {
             | "ui.recentClear"
             | "ui.displayServer"
             | "ui.statusCount"
-            | "ui.checkForUpdates"
     ) || id.starts_with("help.")
 }
 
